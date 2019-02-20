@@ -1,0 +1,39 @@
+{
+	"compilerOptions": {
+		"baseUrl": ".",
+		"outDir": "dist",
+		"module": "commonjs",
+		"target": "es5",
+		"lib": ["es6", "dom"],
+		"declaration": true,
+		"sourceMap": true,
+		"allowJs": false,
+		"jsx": "react",
+		"moduleResolution": "node",
+		"rootDir": "lib",
+		"forceConsistentCasingInFileNames": false,
+		"noImplicitReturns": true,
+		"noImplicitThis": true,
+		"noImplicitAny": true,
+		"importHelpers": true,
+		"strictNullChecks": true,
+		"suppressImplicitAnyIndexErrors": true,
+		"noUnusedLocals": true,
+		"experimentalDecorators": true,
+		// "allowSyntheticDefaultImports": true,
+		"resolveJsonModule": true,
+		"paths": {
+			"*": ["*", "src/*"]
+		}
+	},
+	"exclude": [
+		"tslib",
+		"node_modules",
+		// "build",
+		// "scripts",
+		"acceptance-tests",
+		"webpack",
+		"jest",
+		"src/setupTests.ts"
+	]
+}
