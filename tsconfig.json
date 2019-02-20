@@ -6,7 +6,7 @@
 		"target": "es5",
 		"lib": ["es6", "dom"],
 		"declaration": true,
-		"sourceMap": true,
+		"sourceMap": false,
 		"allowJs": false,
 		"jsx": "react",
 		"moduleResolution": "node",

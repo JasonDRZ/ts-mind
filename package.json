@@ -6,7 +6,8 @@
 	"types": "dist/index.d.ts",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"build": "rimraf ./dist && npx tsc"
+		"style": "lessc ./lib/style/* ./dist/style.css",
+		"build": "rimraf ./dist && npx tsc && yarn style"
 	},
 	"repository": {
 		"type": "git",
@@ -28,10 +29,11 @@
 	},
 	"homepage": "https://github.com/JasonDRZ/ts-mind#readme",
 	"devDependencies": {
+		"commitizen": "^3.0.5",
+		"less": "^3.9.0",
 		"rimraf": "^2.6.3",
 		"tslib": "^1.9.3",
 		"typescript": "^3.3.3",
-		"commitizen": "^3.0.5",
 		"validate-commit-msg": "^2.14.0"
 	},
 	"dependencies": {},
