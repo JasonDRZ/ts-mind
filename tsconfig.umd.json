@@ -1,0 +1,11 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"module": "umd",
+		"target": "es5",
+		"outDir": "lib-umd/",
+		"outFile": "ts-mind.js",
+		"declaration": false,
+		"sourceMap": true
+	}
+}
