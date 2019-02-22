@@ -2,16 +2,16 @@
 	"name": "ts-mind",
 	"version": "1.0.2",
 	"description": "A web-mind lib write in typescript.Sound apis and friendly plug-in mechanism in this lib.",
-	"main": "./lib-commonjs/index.js",
+	"main": "./index.js",
 	"module": "./lib-es/index.js",
 	"jsnext:min": "./lib-es/index.js",
 	"types": "./lib-es/index.d.ts",
-	"browser": "./lib-umd/ts-mind.min.js",
+	"browser": "./lib-umd/ts-mind.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"style": "lessc --compress ./src/style/* ./style/index.css",
 		"clean": "rimraf lib-*",
-		"build": "run-p clean style lib:es lib:commonjs lib:umd lib:umd_min",
+		"build": "run-p clean style lib:es lib:umd lib:umd_min",
 		"lib:es": "npx tsc --build tsconfig.es.json",
 		"lib:commonjs": "npx tsc --build tsconfig.commonjs.json",
 		"lib:umd": "webpack",
@@ -25,7 +25,8 @@
 		"*.md",
 		"lib-*",
 		"style",
-		"src"
+		"src",
+		"index.js"
 	],
 	"keywords": [
 		"tsmind",
