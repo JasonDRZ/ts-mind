@@ -1,18 +1,32 @@
 {
 	"name": "ts-mind",
-	"version": "1.0.0",
+	"version": "1.0.2",
 	"description": "A web-mind lib write in typescript.Sound apis and friendly plug-in mechanism in this lib.",
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
+	"main": "./lib-commonjs/index.js",
+	"module": "./lib-es/index.js",
+	"jsnext:min": "./lib-es/index.js",
+	"types": "./lib-es/index.d.ts",
+	"browser": "./lib-umd/ts-mind.min.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"style": "lessc --compress ./lib/style/* ./dist/style.css",
-		"build": "rimraf ./dist && npx tsc && yarn style"
+		"style": "lessc --compress ./src/style/* ./style/index.css",
+		"clean": "rimraf lib-*",
+		"build": "run-p clean style lib:es lib:commonjs lib:umd lib:umd_min",
+		"lib:es": "npx tsc --build tsconfig.es.json",
+		"lib:commonjs": "npx tsc --build tsconfig.commonjs.json",
+		"lib:umd": "webpack",
+		"lib:umd_min": "webpack --env.minimize"
 	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/JasonDRZ/ts-mind.git"
 	},
+	"files": [
+		"*.md",
+		"lib-*",
+		"style",
+		"src"
+	],
 	"keywords": [
 		"tsmind",
 		"mind-map",
@@ -29,12 +43,17 @@
 	},
 	"homepage": "https://github.com/JasonDRZ/ts-mind#readme",
 	"devDependencies": {
+		"awesome-typescript-loader": "^5.2.1",
 		"commitizen": "^3.0.5",
+		"cross-env": "^5.2.0",
 		"less": "^3.9.0",
+		"npm-run-all": "^4.1.5",
 		"rimraf": "^2.6.3",
 		"tslib": "^1.9.3",
 		"typescript": "^3.3.3",
-		"validate-commit-msg": "^2.14.0"
+		"validate-commit-msg": "^2.14.0",
+		"webpack": "^4.29.5",
+		"webpack-cli": "^3.2.3"
 	},
 	"dependencies": {},
 	"config": {
