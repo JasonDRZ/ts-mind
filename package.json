@@ -1,6 +1,6 @@
 {
 	"name": "ts-mind",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"description": "A web-mind lib write in typescript.Sound apis and friendly plug-in mechanism in this lib.",
 	"main": "./index.js",
 	"module": "./lib-es/index.js",
