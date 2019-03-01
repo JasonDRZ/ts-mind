@@ -22,17 +22,9 @@
 		"experimentalDecorators": true,
 		// "allowSyntheticDefaultImports": true,
 		"paths": {
-			"*": ["*", "src/*"]
+			"*": ["src/*"]
 		}
 	},
-	"exclude": [
-		"tslib",
-		"node_modules"
-		// "build",
-		// "scripts",
-		// "acceptance-tests",
-		// "webpack",
-		// "jest",
-		// "src/setupTests.ts"
-	]
+	// "include": ["src/**/*", "src/global.d.ts"],
+	"exclude": ["tslib"]
 }

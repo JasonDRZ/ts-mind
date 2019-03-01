@@ -3,7 +3,6 @@
 	"compilerOptions": {
 		"outDir": "lib-commonjs",
 		"module": "commonjs",
-		"target": "es5",
-		"resolveJsonModule": true
+		"target": "es5"
 	}
 }

@@ -5,14 +5,14 @@
 	"main": "./index.js",
 	"module": "./lib-es/index.js",
 	"jsnext:min": "./lib-es/index.js",
-	"types": "./lib-es/index.d.ts",
+	"typings": "./lib-es/index.d.ts",
 	"browser": "./lib-umd/ts-mind.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"style": "lessc --compress ./src/style/* ./style/index.css",
 		"clean": "rimraf lib-*",
 		"build": "run-p clean style lib:es lib:umd lib:umd_min",
-		"lib:es": "npx tsc --build tsconfig.es.json",
+		"lib:es": " tsc --build tsconfig.es.json",
 		"lib:commonjs": "npx tsc --build tsconfig.commonjs.json",
 		"lib:umd": "webpack",
 		"lib:umd_min": "webpack --env.minimize"
@@ -24,6 +24,7 @@
 	"files": [
 		"*.md",
 		"lib-*",
+		"typings",
 		"style",
 		"src",
 		"index.js"
