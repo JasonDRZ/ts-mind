@@ -1,2 +1,3 @@
 /// <reference path="../typings/index.d.ts" />
-export * from "./core/index";
+import TSMind from "./core";
+export default TSMind;

@@ -140,12 +140,12 @@ export default class draggable {
     let closest_node = null;
     let closest_p = null;
     let shadow_p = null;
-    for (const nodeid in nodes) {
-      if (!nodeid) continue;
+    for (const nodeId in nodes) {
+      if (!nodeId) continue;
       let np;
       let sp;
-      node = nodes[nodeid];
-      if (node.isroot || node.direction === direct) {
+      node = nodes[nodeId];
+      if (node.isRoot || node.direction === direct) {
         if (node.id === this.active_node!.id) {
           continue;
         }
@@ -233,11 +233,11 @@ export default class draggable {
     if (el.tagName.toLowerCase() !== TSM_Node_Names.node) {
       return;
     }
-    const nodeid = tsview.get_binded_nodeid(el);
+    const nodeId = tsview.get_binded_nodeid(el);
     const isTouch = e.type.match(/^touch/);
-    if (!!nodeid) {
-      const node = this.tsm.get_node(nodeid);
-      if (!!node && !node.isroot) {
+    if (!!nodeId) {
+      const node = this.tsm.get_node(nodeId);
+      if (!!node && !node.isRoot) {
         this.reset_shadow(el);
         this.active_node = node;
         const _client = (isTouch ? (e as TouchEvent).touches[0] : e) as DragEvent;

@@ -13,7 +13,7 @@ export const node_array = {
 		},
 		format: "node_array",
 		data: [
-			{ id: "root", topic: "jsMind Example", isroot: true }
+			{ id: "root", topic: "jsMind Example", isRoot: true }
 		] as ITSMNodeDataItem[]
 	},
 
@@ -59,7 +59,7 @@ export const node_array = {
 		const df = node_array;
 		let i = nodes.length;
 		while (i--) {
-			if ("isroot" in nodes[i] && nodes[i].isroot) {
+			if ("isRoot" in nodes[i] && nodes[i].isRoot) {
 				const root_json = nodes[i];
 				const data = df._extract_data(root_json);
 				mind.set_root(root_json.id, root_json.topic, data);
@@ -118,7 +118,7 @@ export const node_array = {
 				k === "id" ||
 				k === "topic" ||
 				k === "parentid" ||
-				k === "isroot" ||
+				k === "isRoot" ||
 				k === "direction" ||
 				k === "expanded"
 			) {
@@ -150,10 +150,10 @@ export const node_array = {
 		if (!!node.parent) {
 			o.parentid = node.parent.id;
 		}
-		if (node.isroot) {
-			o.isroot = true;
+		if (node.isRoot) {
+			o.isRoot = true;
 		}
-		if (!!node.parent && node.parent.isroot) {
+		if (!!node.parent && node.parent.isRoot) {
 			o.direction = node.direction === TSMind.direction.left ? "left" : "right";
 		}
 		if (node.data != null) {

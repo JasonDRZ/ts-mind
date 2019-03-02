@@ -95,18 +95,18 @@ export default class screenshot {
 
   _draw_nodes = (callback: ITSMAnyCall) => {
     const nodes = this.tsm.mind!.nodes;
-    for (const nodeid in nodes) {
-      if (!nodeid) continue;
-      const node = nodes[nodeid];
+    for (const nodeId in nodes) {
+      if (!nodeId) continue;
+      const node = nodes[nodeId];
       this._draw_node(node);
     }
 
     function check_nodes_ready() {
       console.log("check_node_ready" + new Date());
       let allOk = true;
-      for (const nodeid in nodes) {
-        if (!nodeid) continue;
-        const node = nodes[nodeid];
+      for (const nodeId in nodes) {
+        if (!nodeId) continue;
+        const node = nodes[nodeId];
         allOk = allOk && node.expands.screen_shot_ready;
       }
 

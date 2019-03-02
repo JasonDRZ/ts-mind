@@ -22,7 +22,7 @@ type ITSMNodeDataItem = {
 	topic: string;
 	width: number;
 	height: number;
-	isroot?: boolean;
+	isRoot?: boolean;
 	expanded?: boolean;
 	parentid?: string;
 	direction?: ITSMDirection;

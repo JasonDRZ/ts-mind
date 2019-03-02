@@ -149,7 +149,7 @@ export const freemind = {
 		if (!node) return;
 		const df = freemind;
 		let pos = null;
-		if (!!node.parent && node.parent.isroot) {
+		if (!!node.parent && node.parent.isRoot) {
 			pos = node.direction === TSMind.direction.left ? "left" : "right";
 		}
 		xmllines.push("<node");

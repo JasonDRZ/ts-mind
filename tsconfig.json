@@ -26,5 +26,5 @@
 		}
 	},
 	// "include": ["src/**/*", "src/global.d.ts"],
-	"exclude": ["tslib"]
+	"exclude": ["tslib", "lib*"]
 }

@@ -137,7 +137,7 @@ export default class layout_provider {
       layout_data.outer_height = node_outer_height;
       layout_data.offset_y = base_y - node_outer_height / 2;
       layout_data.offset_x = this.opts.hspace * layout_data.direction + (pd.view_data.width * (pd.layout_data.direction + layout_data.direction)) / 2;
-      if (!node.parent.isroot) {
+      if (!node.parent.isRoot) {
         layout_data.offset_x += this.opts.pspace * layout_data.direction;
       }
 
@@ -205,7 +205,7 @@ export default class layout_provider {
     if (offset_cache.x === -1 || offset_cache.y === -1) {
       let x = layout_data.offset_x;
       let y = layout_data.offset_y;
-      if (!node.isroot) {
+      if (!node.isRoot) {
         const offset_p = this.get_node_offset(node.parent);
         x += offset_p.x;
         y += offset_p.y;
@@ -234,7 +234,7 @@ export default class layout_provider {
   get_node_point_out = (node: ITSMLayoutProvNode) => {
     const pout_cache = { x: -1, y: -1 };
     if (pout_cache.x === -1 || pout_cache.y === -1) {
-      if (node.isroot) {
+      if (node.isRoot) {
         pout_cache.x = 0;
         pout_cache.y = 0;
       } else {
@@ -268,9 +268,9 @@ export default class layout_provider {
     if (!nodes) return;
     let node = null;
     let pout = null;
-    for (const nodeid in nodes) {
-      if (!nodeid) continue;
-      node = nodes[nodeid];
+    for (const nodeId in nodes) {
+      if (!nodeId) continue;
+      node = nodes[nodeId];
       pout = this.get_node_point_out(node);
       // $logger.debug(pout.x);
       if (pout.x > this.bounds.e) {
@@ -287,7 +287,7 @@ export default class layout_provider {
   };
 
   toggle_node = (node: ITSMLayoutProvNode) => {
-    if (node.isroot) {
+    if (node.isRoot) {
       return;
     }
     if (node.expanded) {
@@ -314,9 +314,9 @@ export default class layout_provider {
     if (!nodes) return;
     let c = 0;
     let node;
-    for (const nodeid in nodes) {
-      if (!nodeid) continue;
-      node = nodes[nodeid];
+    for (const nodeId in nodes) {
+      if (!nodeId) continue;
+      node = nodes[nodeId];
       if (!node.expanded) {
         node.expanded = true;
         c++;
@@ -334,10 +334,10 @@ export default class layout_provider {
     const nodes = this.tsm.mind!.nodes;
     let c = 0;
     let node;
-    for (const nodeid in nodes) {
-      if (!nodeid) continue;
-      node = nodes[nodeid];
-      if (node.expanded && !node.isroot) {
+    for (const nodeId in nodes) {
+      if (!nodeId) continue;
+      node = nodes[nodeId];
+      if (node.expanded && !node.isRoot) {
         node.expanded = false;
         c++;
       }
@@ -377,7 +377,7 @@ export default class layout_provider {
     if (!!root) {
       const root_layout_data = root.layout_data;
       if (!root_layout_data) return;
-      if (node.isroot) {
+      if (node.isRoot) {
         root_layout_data.right_nodes && (root_layout_data.outer_height_right = this._layout_offset_subnodes_height(root_layout_data.right_nodes));
         root_layout_data.left_nodes && (root_layout_data.outer_height_left = this._layout_offset_subnodes_height(root_layout_data.left_nodes));
       } else {
@@ -406,7 +406,7 @@ export default class layout_provider {
       } else {
         this.set_visible(node.children, false);
       }
-      if (!node.isroot) {
+      if (!node.isRoot) {
         node.layout_data.visible = visible;
       }
     }

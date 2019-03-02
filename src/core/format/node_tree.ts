@@ -68,7 +68,7 @@ export const node_tree = {
 		const df = node_tree;
 		const data = df._extract_data(node_json);
 		let dir: ITSMDirectionValue = TSMindDirectionMap.right;
-		if (node_parent.isroot) {
+		if (node_parent.isRoot) {
 			dir = TSMindDirectionMap[node_json.direction];
 		}
 		const node = mind.add_node(
@@ -98,7 +98,7 @@ export const node_tree = {
 			topic: node.topic,
 			expanded: node.expanded
 		};
-		if (!!node.parent && node.parent!.isroot) {
+		if (!!node.parent && node.parent!.isRoot) {
 			o.direction =
 				node.direction === TSMindDirectionMap.left ? "left" : "right";
 		}

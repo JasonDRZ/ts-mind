@@ -1,32 +1,30 @@
 import { TSM_node } from "../core/node";
 import { canvas } from "./canvas";
-import { file } from "./file";
-import { json } from "./json";
+import * as file from "./file";
 import { ajax } from "./ajax";
 import { dom } from "./dom";
-import { uuid } from "./uuid";
-import { text } from "./text";
-import * as array from "./array";
 
 export const util = {
-  is_node(node: any) {
-    return node instanceof TSM_node;
-  },
-  ajax,
+	is_node(node: any) {
+		return node instanceof TSM_node;
+	},
+	ajax,
 
-  dom,
+	dom,
 
-  canvas,
+	canvas,
 
-  file,
+	file,
 
-  json,
-
-  uuid,
-
-  text,
-
-  array
+	// get random uuid
+	uuid() {
+		return (
+			new Date().getTime().toString(16) +
+			Math.random()
+				.toString(16)
+				.substr(2)
+		).substr(2, 16);
+	}
 };
 
 export default util;
