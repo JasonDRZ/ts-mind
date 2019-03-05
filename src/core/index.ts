@@ -20,6 +20,8 @@ export type ITSMPlugin =
 	| ITSMAnyCall<[TSMind, ITSMOptions], void>
 	| ITSMClassPlug;
 
+export type ITSMNode = string | TSM_node;
+
 // global use register
 export const use = globalUse;
 
@@ -206,8 +208,8 @@ export class TSMind {
 		}
 	};
 
-	begin_edit = (node: any): any => {
-		if (!util.is_node(node)) {
+	begin_edit = (node: ITSMNode): any => {
+		if (typeof node === "string") {
 			const the_node = this.get_node(node);
 			if (!the_node) {
 				$logger.error("the node[id=" + node + "] can not be found.");
@@ -228,8 +230,8 @@ export class TSMind {
 		this.view_provider.edit_node_end();
 	};
 
-	toggle_node = (node: any): any => {
-		if (!util.is_node(node)) {
+	toggle_node = (node: ITSMNode): any => {
+		if (typeof node === "string") {
 			const the_node = this.get_node(node);
 			if (!the_node) {
 				$logger.error("the node[id=" + node + "] can not be found.");
@@ -247,8 +249,8 @@ export class TSMind {
 		this.view_provider.restore_location(node);
 	};
 
-	expand_node = (node: any): any => {
-		if (!util.is_node(node)) {
+	expand_node = (node: ITSMNode): any => {
+		if (typeof node === "string") {
 			const the_node = this.get_node(node);
 			if (!the_node) {
 				$logger.error("the node[id=" + node + "] can not be found.");
@@ -266,8 +268,8 @@ export class TSMind {
 		this.view_provider.restore_location(node);
 	};
 
-	collapse_node = (node: any): any => {
-		if (!util.is_node(node)) {
+	collapse_node = (node: ITSMNode): any => {
+		if (typeof node === "string") {
 			const the_node = this.get_node(node);
 			if (!the_node) {
 				$logger.error("the node[id=" + node + "] can not be found.");
@@ -335,11 +337,7 @@ export class TSMind {
 	};
 
 	get_meta = () => {
-		return {
-			name: this.mind!.name,
-			author: this.mind!.author,
-			version: this.mind!.version
-		};
+		return this.mind!.meta || {};
 	};
 
 	get_data = (data_format: ITSMDataFormat = "node_tree") => {
@@ -388,7 +386,8 @@ export class TSMind {
 		data: any
 	) => {
 		if (this.get_editable()) {
-			const beforeid = util.is_node(node_before) ? node_before.id : node_before;
+			const beforeid =
+				typeof node_before !== "string" ? node_before.id : node_before;
 			const node = this.mind!.insert_node_before(
 				node_before,
 				nodeId,
@@ -419,7 +418,8 @@ export class TSMind {
 		data?: any
 	) => {
 		if (this.get_editable()) {
-			const afterid = util.is_node(node_after) ? node_after.id : node_after;
+			const afterid =
+				typeof node_after !== "string" ? node_after.id : node_after;
 			const node = this.mind!.insert_node_after(
 				node_after,
 				nodeId,
@@ -443,8 +443,8 @@ export class TSMind {
 		}
 	};
 
-	remove_node = (node: any): boolean => {
-		if (!util.is_node(node)) {
+	remove_node = (node: ITSMNode): boolean => {
+		if (typeof node === "string") {
 			const the_node = this.get_node(node);
 			if (!the_node) {
 				$logger.error("the node[id=" + node + "] can not be found.");
@@ -532,8 +532,8 @@ export class TSMind {
 		}
 	};
 
-	select_node = (node: any): any => {
-		if (!util.is_node(node)) {
+	select_node = (node: ITSMNode): any => {
+		if (typeof node === "string") {
 			const the_node = this.get_node(node);
 			if (!the_node) {
 				$logger.error("the node[id=" + node + "] can not be found.");
@@ -564,12 +564,12 @@ export class TSMind {
 		}
 	};
 
-	is_node_visible = (node: any) => {
+	is_node_visible = (node: TSM_node) => {
 		return this.layout_provider.is_visible(node);
 	};
 
-	find_node_before = (node: any): null | ITSMNodeDataItem => {
-		if (!util.is_node(node)) {
+	find_node_before = (node: ITSMNode): null | TSM_node => {
+		if (typeof node === "string") {
 			const the_node = this.get_node(node);
 			if (!the_node) {
 				$logger.error("the node[id=" + node + "] can not be found.");
@@ -599,8 +599,8 @@ export class TSMind {
 		return n;
 	};
 
-	find_node_after = (node: any): any => {
-		if (!util.is_node(node)) {
+	find_node_after = (node: ITSMNode): any => {
+		if (typeof node === "string") {
 			const the_node = this.get_node(node);
 			if (!the_node) {
 				$logger.error("the node[id=" + node + "] can not be found.");

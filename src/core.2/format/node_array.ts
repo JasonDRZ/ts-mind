@@ -1,6 +1,6 @@
 import { __authores__, __version__, __name__ } from "../../util/constants";
 import { TSM_mind } from "../mind";
-import { $logger, $extend } from "../../util/tools";
+import { $logger } from "../../util/tools";
 import { TSM_node } from "../node";
 import TSMind from "..";
 
@@ -20,7 +20,9 @@ export const node_array = {
 	get_mind(source: any) {
 		const df = node_array;
 		const mind = new TSM_mind();
-		mind.meta = source.meta;
+		mind.name = source.meta.name;
+		mind.author = source.meta.author;
+		mind.version = source.meta.version;
 		df._parse(mind, source.data);
 		return mind;
 	},
@@ -30,7 +32,11 @@ export const node_array = {
 		const data: any[] = [];
 		df._array(mind, data);
 		return {
-			meta: mind.meta,
+			meta: {
+				name: mind.name,
+				author: mind.author,
+				version: mind.version
+			},
 			format: "node_array",
 			data
 		};

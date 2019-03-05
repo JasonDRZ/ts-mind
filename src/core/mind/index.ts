@@ -1,5 +1,4 @@
 import { $logger } from "../../util/tools";
-import util from "../../util";
 import { TSM_node } from "../node";
 import TSMind from "..";
 
@@ -7,13 +6,10 @@ import TSMind from "..";
 type IJSMindNodeSelector = string | TSM_node;
 
 export class TSM_mind {
-	id: string;
-	name: any = null;
-	author: any = null;
-	version: any = null;
-	root: null | TSM_node = null;
-	selected: null | TSM_node = null;
-	nodes: { [k: string]: TSM_node } = {};
+	public meta: ITSMSourceMeta;
+	public root: null | TSM_node = null;
+	public selected: null | TSM_node = null;
+	public nodes: { [k: string]: TSM_node } = {};
 	get_node = (nodeId: string) => {
 		if (nodeId in this.nodes) {
 			return this.nodes[nodeId];
@@ -41,7 +37,7 @@ export class TSM_mind {
 		direction?: ITSMDirectionValue,
 		expanded?: boolean
 	): any => {
-		if (!util.is_node(parent)) {
+		if (typeof parent === "string") {
 			const the_parent_node = this.get_node(parent as string);
 			if (!the_parent_node) {
 				$logger.error("the parent_node[id=" + parent + "] can not be found.");
@@ -122,7 +118,7 @@ export class TSM_mind {
 		topic: any,
 		data?: object
 	): null | TSM_node => {
-		if (!util.is_node(node_before)) {
+		if (typeof node_before === "string") {
 			const the_node_before = this.get_node(node_before as string);
 			if (!the_node_before) {
 				$logger.error(

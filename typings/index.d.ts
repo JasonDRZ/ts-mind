@@ -1,3 +1,4 @@
+type ITSMTopic = any;
 // mind direction tag
 type ITSMDirection = "left" | "right" | "center";
 // mind direction value
@@ -33,12 +34,14 @@ type ITSMAnyCall<Arg extends any[] = any[], Return = any> = (
 	...arg: Arg
 ) => Return;
 
+interface ITSMSourceMeta {
+	name: string;
+	author: any;
+	version: string;
+}
+
 type ITSMSourceData<MindData> = {
-	meta: {
-		name: string;
-		author: any;
-		version: string;
-	};
+	meta: ITSMSourceMeta;
 	format: string;
 	data: MindData;
 };

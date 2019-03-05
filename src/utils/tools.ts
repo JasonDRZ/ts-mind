@@ -1,15 +1,26 @@
 import { _slice } from "./array";
-import { TSM_node } from "core.2/node";
+import { TSM_node } from "core.2/mind/node";
 
 export const $noop = function(...arg: any[]): any {};
 
-export const $logger = console || {
-	log: $noop,
-	debug: $noop,
-	error: $noop,
-	warn: $noop,
-	info: $noop
-};
+function _loggerHandler(method: string) {
+	return (action: string, msg: string, ...oth: any[]) =>
+		console[method].apply(null, `[ACTION: ${action}]`, msg, ...oth);
+}
+
+export class $logger {
+	// let _handler: any = () => $noop;
+	// if (mode === "debug") _handler = _loggerHandler;
+	_handler: (s: string) => (action: string, ...msg: any[]) => void;
+	constructor(isDebug: boolean) {
+		this._handler = isDebug ? _loggerHandler : () => $noop;
+	}
+	log = this._handler("log");
+	debug = this._handler("debug");
+	error = this._handler("error");
+	warn = this._handler("warn");
+	info = this._handler("info");
+}
 
 // NODE Operation
 export const $doc = window.document;
@@ -229,4 +240,25 @@ export function $branchRoot(parent: TSM_node) {
 			return null;
 		}
 	};
+}
+
+// Compare index between two TSM_nodes;
+export function $sortNodeByIndex(node1: TSM_node, node2: TSM_node): number {
+	// '-1' is alwary the last
+	let r = 0;
+	const i1 = node1.index;
+	const i2 = node2.index;
+	if (i1 >= 0 && i2 >= 0) {
+		r = i1 - i2;
+	} else if (i1 === -1 && i2 === -1) {
+		r = 0;
+	} else if (i1 === -1) {
+		r = 1;
+	} else if (i2 === -1) {
+		r = -1;
+	} else {
+		r = 0;
+	}
+	// logger.debug(i1+' <> '+i2+'  =  '+r);
+	return r;
 }

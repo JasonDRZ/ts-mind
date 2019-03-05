@@ -16,14 +16,20 @@ export const node_tree = {
 	get_mind(source: any) {
 		const df = node_tree;
 		const mind = new TSM_mind();
-		mind.meta = source.meta;
+		mind.name = source.meta.name;
+		mind.author = source.meta.author;
+		mind.version = source.meta.version;
 		df._parse(mind, source.data);
 		return mind;
 	},
 	get_data(mind: TSM_mind) {
 		const df = node_tree;
 		return {
-			meta: mind.meta,
+			meta: {
+				name: mind.name,
+				author: mind.author,
+				version: mind.version
+			},
 			format: "node_tree",
 			data: df._buildnode(mind.root)
 		};

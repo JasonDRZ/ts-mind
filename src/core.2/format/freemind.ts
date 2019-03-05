@@ -3,7 +3,6 @@ import { TSM_mind } from "../mind";
 import TSMind from "..";
 import { TSM_node } from "../node";
 import { _slice } from "../../util/array";
-import { $extend } from "util/tools";
 
 type IFreemindSource = ITSMSourceData<string>;
 
@@ -20,7 +19,9 @@ export const freemind = {
 	get_mind(source: IFreemindSource) {
 		const df = freemind;
 		const mind = new TSM_mind();
-		mind.meta = source.meta;
+		mind.name = source.meta.name;
+		mind.author = source.meta.author;
+		mind.version = source.meta.version;
 		const xml = source.data;
 		const xml_doc = df._parse_xml(xml);
 		const xml_root = df._find_root(xml_doc);
@@ -31,7 +32,11 @@ export const freemind = {
 	get_data(mind: TSM_mind) {
 		const df = freemind;
 		const json: IFreemindSource = {
-			meta: mind.meta,
+			meta: {
+				name: mind.name,
+				author: mind.author,
+				version: mind.version
+			},
 			format: "freemind",
 			data: ""
 		};
