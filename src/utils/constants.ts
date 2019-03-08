@@ -4,40 +4,36 @@ export const __version__ = "0.5.0";
 // authores
 export const __authores__ = ["1071115676@qq.com", "hizzgdev@163.com"];
 
-export type ITSMMode = "full" | "side";
-export type ITSMTheme = string;
-export interface ITSMLayoutOpts {
-	hspace?: number;
-	vspace?: number;
-	pspace?: number;
-}
+export type IMMode = "full" | "side";
+export type IMTheme = string;
+
 // default configuration
-export interface ITSMOptions {
+export interface IMOptions {
 	container: string; // id of the container
 	editable?: boolean; // you can change it in your options
-	theme?: ITSMTheme;
-	mode?: ITSMMode; // full or side
+	theme?: IMTheme;
+	mode?: IMMode; // full or side
 	support_html?: boolean;
 	debug?: boolean;
-	view?: {
-		hmargin?: number;
-		vmargin?: number;
-		line_width?: number;
-		line_color?: string;
-	};
-	layout?: ITSMLayoutOpts;
-	default_event_handle?: {
-		enable_mousedown_handle: boolean;
-		enable_click_handle: boolean;
-		enable_dblclick_handle: boolean;
-	};
-	shortcut?: {
-		enable: boolean;
-		handles: ITSMShortcutProvOptsHandles;
-		mapping: ITSMShortcutProvOptsMapping;
-	};
+	view?: IMOptView;
+	layout?: IMOptLayout;
+	default_event_handle?: IMOptDefEvHanle;
+	shortcut?: IMOptShortcut;
 }
-export const DEFAULT_OPTIONS = {
+export interface IMOptionsDef {
+	container: string; // id of the container
+	editable: boolean; // you can change it in your options
+	theme: IMTheme;
+	mode: IMMode; // full or side
+	support_html: boolean;
+	debug: boolean;
+	view: IMOptViewDef;
+	layout: IMOptLayoutDef;
+	default_event_handle: IMOptDefEvHanleDef;
+	shortcut: IMOptShortcutDef;
+}
+
+export const DEFAULT_OPTIONS: IMOptionsDef = {
 	container: "", // id of the container
 	editable: false, // you can change it in your options
 	theme: "primary",
