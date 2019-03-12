@@ -1,4 +1,4 @@
-import VNode from "core.2/node/vnode";
+import { VNode } from "core.2/components/VTopic";
 import { destroyObject } from "utils/tools";
 import { SVGLine } from "./line";
 import { TopicExpander } from "./expander";
@@ -7,7 +7,7 @@ import { createDivElement } from "utils/view";
 export type IMPartnerType = "topic" | "node";
 
 export type IMPartnerRenderThing = IMEmpty | number | boolean | string | Node;
-export type IMPartnerGenerater = (vn: VNode) => Partner;
+export type IMPartnerGenerater = (vt: VNode) => Partner;
 export interface IMPartnerMap {
   [k: string]: IMPartnerGenerater;
 }
@@ -25,8 +25,8 @@ function _addPartner(this: IMPartnerMap, pname: string, generater: IMPartnerGene
 
 // those partners will be used in all VNode component
 export const GlobalPartnerMap: IMPartnerMap = {
-  line: (vn: VNode) => new SVGLine(vn),
-  expander: (vn: VNode) => new TopicExpander(vn)
+  line: (vt: VNode) => new SVGLine(vt),
+  expander: (vt: VNode) => new TopicExpander(vt)
 };
 
 export function globalPartner() {
@@ -53,7 +53,7 @@ export function scopedPartner() {
 }
 
 export class Partner {
-  vn: VNode;
+  vt: VNode;
   // where is this Partner bind，depends on its type
   public type: IMPartnerType;
   public insertBefore: boolean = false;
@@ -63,12 +63,16 @@ export class Partner {
   // life circle flag
   public _mounted: boolean = false;
   public _destroyed: boolean = false;
-  constructor(vn: VNode) {
-    this.vn = vn;
+  constructor(vt: VNode) {
+    this.vt = vt;
   }
+  // Called synchronously before the partner's element be insterted into topic-box or topic-wrapper node.
   public beforeMount() {}
+  // Called synchronously after the partner's element is insterted into topic-box or topic-wrapper node.
   public mounted() {}
+  // Called synchronously after the bound topic-node updated.
   public unmount() {}
+  // Called synchronously after the bound topic-node updated.
   public nodeUpdated() {}
 
   // Framework hooks
@@ -97,9 +101,9 @@ export class Partner {
 export function unmountPartner(this: Partner, ctx: Partner = this) {
   if (ctx.element) {
     if ((ctx.type = "node")) {
-      ctx.vn.view.elements.wrapper.removeChild(ctx.element);
+      ctx.vt.view.elements.wrapper.removeChild(ctx.element);
     } else {
-      ctx.vn.view.elements.topicBox.removeChild(ctx.element);
+      ctx.vt.view.elements.topicBox.removeChild(ctx.element);
     }
   }
 }
@@ -108,12 +112,12 @@ export function mountPartner(this: Partner, ctx: Partner = this) {
   // upate classname
   if (this.element.className !== this.className) this.element.className = this.className;
   if ((ctx.type = "node")) {
-    const wrapper = ctx.vn.view.elements.wrapper;
+    const wrapper = ctx.vt.view.elements.wrapper;
     if (ctx.insertBefore) {
       wrapper.insertBefore(ctx.element, wrapper.firstElementChild);
     } else wrapper.appendChild(ctx.element);
   } else {
-    const topicBox = ctx.vn.view.elements.topicBox;
+    const topicBox = ctx.vt.view.elements.topicBox;
     if (ctx.insertBefore) {
       topicBox.insertBefore(ctx.element, topicBox.firstElementChild);
     } else topicBox.appendChild(ctx.element);
