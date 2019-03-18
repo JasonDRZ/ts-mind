@@ -181,3 +181,35 @@ export function destroyObject(obj: { _destroyed: boolean; [k: string]: any }) {
   // destroy the prototype chain
   obj.__proto__ = null;
 }
+
+// compare difference between two objects, and export differences.
+export function getObjectDiffs(newObj: object, oldObj: object) {
+  const _mks = Object.keys(newObj);
+  const len = _mks.length;
+  const diffs = [];
+  let i = 0;
+  let diffCounter = 0;
+  while (i < len) {
+    const _mk = _mks[i];
+    if (oldObj.hasOwnProperty(_mk)) {
+      if (newObj[_mk] !== oldObj[_mk]) {
+        diffs.push([_mk, newObj[_mk]]);
+        diffCounter++;
+      }
+    } else {
+      diffs.push([_mk, newObj[_mk]]);
+      diffCounter++;
+    }
+    i++;
+  }
+  return diffCounter > 0 ? diffs : null;
+}
+
+export function randomId() {
+  return (
+    new Date().getTime().toString(16) +
+    Math.random()
+      .toString(16)
+      .substr(2)
+  ).substr(2, 16);
+}

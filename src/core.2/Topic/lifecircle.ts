@@ -1,9 +1,11 @@
 import { destroyObject } from "utils/tools";
-import { VMind } from "../VMind";
-import { VTopicHooks } from "core.2/hooks";
+import { Mind } from "../Mind";
+import { IMTopicHooks, TopicProviderInstance, IMTopicOptionsDef } from "./defs";
 
-export class VTopicLifecircle {
-  public vm: VMind;
+export class TopicLifecircle {
+  // topic  options, index of configuration.
+  public options: IMTopicOptionsDef;
+  public vm: Mind;
   // state flags
   public _mounted: boolean = false;
   public _destroyed: boolean = false;
@@ -12,12 +14,14 @@ export class VTopicLifecircle {
     selected: false,
     expanded: true
   };
-  constructor(vm: VMind) {
-    this.$beforeCreate();
+  public providers: IMKeyValue<TopicProviderInstance> = {};
+  constructor(vm: Mind, options: IMTopicOptionsDef) {
     this.vm = vm;
+    this.options = options;
+    this.$beforeCreate();
   }
-  public readonly __callHook = (name: keyof VTopicHooks, ...args: any[]) => {
-    return this.vm.mind.topic[name].apply(this, [this, ...args]);
+  public readonly __callHook = (name: keyof IMTopicHooks, ...args: any[]) => {
+    return this.options[name].apply(this, [this, ...args]);
   };
   // life hooks
   public readonly $destroy = () => {
@@ -48,11 +52,10 @@ export class VTopicLifecircle {
     this.__callHook("mounted");
   };
   public readonly $beforeMount = () => {
-    this._mounted = true;
     this.__callHook("beforeMount");
   };
   public readonly $unmounted = () => {
-    this._mounted = true;
+    this._mounted = false;
     this.__callHook("unmounted");
   };
 

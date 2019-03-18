@@ -2,9 +2,9 @@
  * COMMON PART
  */
 // mind direction tag
-type IMDirection = "left" | "right" | "center";
+type IMDirection = "center" | "top" | "right" | "bottom" | "left";
 // mind direction value
-type IMDirectionValue = 1 | 0 | -1;
+type IMDirectionValue = 0 | 1 | 2 | 3 | 4;
 // event name
 type IMEventType = "show" | "resize" | "edit" | "select" | "mousedown" | "click" | "dblclick";
 // event name goust
@@ -15,41 +15,33 @@ type IMEmpty = undefined | null | "";
 type IMUnionNull<Tar> = Tar | null;
 type IMKeyValue<V = any> = { [k: string]: V };
 
+type IMMode = "top" | "left" | "left-right" | "right" | "bottom" | "center";
+type IMTheme = string;
+
+type IMProviderType = "mind" | "topic" | "data";
+
+type IMCSSStyleMap = IMKeyValue;
+
 /**
  * CUSTOM PART, WIDTH NAMESPACE
  */
-// VTopic topic type
-type IMVTopicTopic = string;
-type IMVTopicPrivateData<T = {}> = { [k: string]: object } & T;
-// VTopic export data
-type IMVTopicExportData = {
+// Topic topic type
+type IMTopicTopic = string;
+type IMTopicPrivateData<T = {}> = IMKeyValue & T;
+type IMMindPrivateData<T = {}> = IMKeyValue & T;
+// Topic export data
+type IMTopicExportData = {
   id: string;
-  topic: IMVTopicTopic;
+  topic: IMTopicTopic;
   index: number;
   direction: IMDirectionValue;
   isRoot: boolean;
-  parentId: string;
+  // root topic has no parent topic
+  parentId?: string;
   expanded: boolean;
-  data: IMVTopicPrivateData;
+  data: IMTopicPrivateData;
 };
-type IMVTopicOptions = {
-  id: string;
-  topic: IMVTopicTopic;
-  index: number;
-  direction: IMDirectionValue;
-  isRoot: boolean;
-  isBranch: boolean;
-  parentId: string;
-  rootId: string;
-  branchId?: string;
-};
-type IMMindData<EX = {}> = Map<string, IMVTopicExportData & EX>;
-
-interface IMVmindMoveNodeToTargetData {
-  toParentId: string;
-  // 不填，则默认添加到最后
-  toIndex?: string;
-}
+type IMMindData<EX = {}> = Map<string, IMTopicExportData & EX>;
 
 /**
  * DATA SOURCE
@@ -65,4 +57,15 @@ interface IMSourceMeta {
   name: string;
   author: any;
   version: string;
+}
+
+/**
+ * provider defination
+ */
+interface IMProviderStatic {
+  readonly typeId: string;
+  readonly type: "mind" | "topic" | "data";
+}
+interface IMProviderCustom<CTX, ProviderAPI> extends IMProviderStatic {
+  new (vm: CTX): ProviderAPI;
 }
