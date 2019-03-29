@@ -12,7 +12,7 @@
 		"style": "lessc --compress ./src/style/* ./style/index.css",
 		"clean": "rimraf lib-*",
 		"build": "run-p clean style lib:es lib:umd lib:umd_min",
-		"dev": "tsc --build tsconfig.dev.json -w",
+		"dev": "rimraf lib-es && tsc --build tsconfig.dev.json -w",
 		"lib:es": "tsc --build tsconfig.es.json",
 		"lib:commonjs": "npx tsc --build tsconfig.commonjs.json",
 		"lib:umd": "webpack",
