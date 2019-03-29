@@ -1,3 +1,6 @@
+import { Topic} from "core/Topic";
+import { Mind } from "core/Mind";
+
 export const _slice = Array.prototype.slice;
 
 export const _noop = function(...arg: any[]): any {};
@@ -144,7 +147,7 @@ export function extend(this: any) {
 }
 
 // debounce method
-export function debounce<T extends any[] = any[]>(handler: ITSMAnyCall<T, void>, tick: number = 10) {
+export function debounce<T extends any[] = any[]>(handler: IMAnyCall<T, void>, tick: number = 10) {
   let _timer: any = null;
   function _dbce(this: any, ...args: T): void {
     const _ctx = this;
@@ -183,26 +186,49 @@ export function destroyObject(obj: { _destroyed: boolean; [k: string]: any }) {
 }
 
 // compare difference between two objects, and export differences.
-export function getObjectDiffs(newObj: object, oldObj: object) {
-  const _mks = Object.keys(newObj);
+export function diffObject<A = object>(obj1: A, obj2: A) {
+  const _mks = Object.keys(obj2);
   const len = _mks.length;
-  const diffs = [];
+  const diffs = {};
   let i = 0;
   let diffCounter = 0;
   while (i < len) {
     const _mk = _mks[i];
-    if (oldObj.hasOwnProperty(_mk)) {
-      if (newObj[_mk] !== oldObj[_mk]) {
-        diffs.push([_mk, newObj[_mk]]);
+    if (obj1.hasOwnProperty(_mk)) {
+      if (obj1[_mk] !== obj2[_mk]) {
+        diffs[_mk] = obj2[_mk];
         diffCounter++;
       }
     } else {
-      diffs.push([_mk, newObj[_mk]]);
+      diffs[_mk] = obj2[_mk];
       diffCounter++;
     }
     i++;
   }
   return diffCounter > 0 ? diffs : null;
+}
+
+/**
+ * merge objects to target,return differences.
+ * @param target
+ * @param args
+ * @returns null|object
+ */
+export function mergeObject<A = object>(target: A, ...args: A[]) {
+  const diff = {};
+  let counter = 0;
+  args.map(obj => {
+    const _diff = diffObject(target, obj);
+    if (_diff) {
+      Object.assign(diff, _diff);
+      counter++;
+    }
+  });
+  if (counter > 0) {
+    Object.assign(target, diff);
+    return diff;
+  }
+  return null;
 }
 
 export function randomId() {
@@ -212,4 +238,54 @@ export function randomId() {
       .toString(16)
       .substr(2)
   ).substr(2, 16);
+}
+
+export function initAnyProviders<Provider extends IMProviderCustom<any, any>>(ctx: Topic | Mind, providers: Array<Provider>, store: IMKeyValue) {
+  // provider data bank
+  providers.map(Provider => {
+    const _tid = Provider.typeId;
+    // data must be an object
+    store[_tid] = store[_tid] || {};
+    const _provider = new Provider(ctx as any);
+    // get provider initial data
+    let _defData = _provider.data || {};
+    _defData = typeof _defData === "function" ? _defData() : _defData;
+    // assign initial provider data
+    Object.assign(store[_tid], _defData);
+    // redefined data attr
+    Object.defineProperty(_provider, "data", {
+      enumerable: true,
+      configurable: false,
+      get() {
+        const _bid = _tid;
+        return store[_bid];
+      },
+      set(v: any) {
+        throw Error(`Provider data can not be replaced,please use Object.assign() instead.`);
+      }
+    });
+    ctx.providers[_tid] = _provider;
+  });
+}
+
+export function precision(num: number) {
+  return +num.toFixed(2);
+}
+
+export function whileMap<RItem = any, Item = any>(arr: Item[], cb: (item: Item, idx: number, arr: Item[]) => RItem) {
+  const ret: RItem[] = [];
+  whileFor(arr, (...arg) => {
+    ret.push(cb(...arg));
+  });
+  return ret;
+}
+
+export function whileFor<Item = any>(arr: Item[], cb: (item: Item, idx: number, arr: Item[]) => void): void {
+  const _slen = arr.length - 1;
+  let _len = _slen;
+  while (_len >= 0) {
+    const idx = _slen - _len;
+    cb(arr[idx], idx, arr);
+    _len--;
+  }
 }

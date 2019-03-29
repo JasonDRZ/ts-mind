@@ -1,5 +1,10 @@
 import { IMTopicProps, IMTopic, Topic } from "../Topic";
 import { Mind } from ".";
+import { initAnyProviders } from "utils/tools";
+
+export function initProviders(vm: Mind) {
+  initAnyProviders(vm, vm.options.providers, vm.data.providers);
+}
 
 export function queryTopic(vm: Mind, node: IMTopic) {
   return typeof node === "string" ? vm.getTopicById(node) : node;
@@ -20,7 +25,8 @@ export function collectTopic(vm: Mind, vt: Topic) {
 }
 
 // if no parent node,that means vm node is a root node;
-export function addTopic(vm: Mind, topicData: IMTopicProps, parent?: IMTopic): boolean {
+export function addTopic(vm: Mind, topicData: IMTopicProps): boolean {
+  const parentId = topicData.parentId;
   // TODO: vm method is to add topic to mind container element.
   if (topicData.id in vm.topicCollectedMap) {
     vm.logger.warn(`The node[id:${topicData.id}] already exist!`);
@@ -31,12 +37,12 @@ export function addTopic(vm: Mind, topicData: IMTopicProps, parent?: IMTopic): b
     // add first topic as root node
     node = _createNode(vm, topicData);
     vm.rootTopic = node;
-  } else if (!parent) {
+  } else if (!parentId) {
     // add free topic
     node = _createNode(vm, { ...topicData, rootId: vm.rootTopic.id });
   } else {
     // add normal topic
-    parent = queryTopic(vm, parent);
+    const parent = queryTopic(vm, parentId);
     if (!parent) return false;
     // add child node
     // const direction = parent.isRoot ? computeRootChildDirection(parent.children) : parent.direction;

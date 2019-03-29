@@ -1,4 +1,4 @@
-import { IMMindOptionsDef } from "core.2/Mind/defs";
+import { IMMindEntryOptionsDef } from "core/Mind/defs";
 
 export const __name__ = "TSMind";
 // library version
@@ -8,11 +8,10 @@ export const __author__ = "1071115676@qq.com";
 
 // mind direction
 export const TSMindDirectionMap: { [k: string]: IMDirectionValue } = {
-  center: 0,
-  top: 1,
-  right: 2,
-  bottom: 3,
-  left: 4
+  left: -1,
+  sides: 0,
+  right: 1,
+  bottom: 2
 };
 export enum TSMindDirectionEnum {
   center = 0,
@@ -25,14 +24,18 @@ export enum TSMindDirectionEnum {
 /**
  * DEFAULT OPTIONS
  */
-export const DEFAULT_OPTIONS: IMMindOptionsDef = {
+export const DEFAULT_OPTIONS: IMMindEntryOptionsDef = {
   container: "", // id of the container
   editable: false, // you can change it in your options
   theme: "primary",
-  mode: "left-right", // full or side
+  mode: "right", // full or side
   debug: false,
   providers: [],
   topic: {
+    position: {
+      x: 0,
+      y: 0
+    },
     classNames:
       // element className map
       {
@@ -43,21 +46,45 @@ export const DEFAULT_OPTIONS: IMMindOptionsDef = {
       },
     style: {},
     providers: [],
-    beforeCreate() {},
-    created() {},
-    beforeMount() {},
-    mounted() {},
-    unmounted() {},
-    beforeUpdate() {},
-    updated() {},
-    beforeDestroy() {},
-    destroyed() {},
-    select() {},
-    expand() {},
+    beforeCreate() {
+      console.log("Topic: beforeCreate", this);
+    },
+    created() {
+      console.log("Topic: created", this);
+    },
+    beforeMount() {
+      console.log("Topic: beforeMount", this);
+    },
+    mounted() {
+      console.log("Topic: mounted", this);
+    },
+    unmounted() {
+      console.log("Topic: unmounted", this);
+    },
+    beforeUpdate() {
+      console.log("Topic: beforeUpdate", this);
+    },
+    updated() {
+      console.log("Topic: updated", this);
+    },
+    beforeDestroy() {
+      console.log("Topic: beforeDestroy", this);
+    },
+    destroyed() {
+      console.log("Topic: destroyed", this);
+    },
+    select() {
+      console.log("Topic: select", this);
+    },
+    expand() {
+      console.log("Topic: expand", this);
+    },
     shouldMount() {
+      console.log("Topic: beforeCshouldMountreate", this);
       return true;
     },
     shouldUpdate() {
+      console.log("Topic: shouldUpdate", this);
       return true;
     }
   },
@@ -72,19 +99,44 @@ export const DEFAULT_OPTIONS: IMMindOptionsDef = {
     } else res = fn();
     return res;
   },
-  beforeCreate() {},
-  created() {},
-  beforeMount() {},
-  mounted() {},
-  unmounted() {},
-  beforeUpdate() {},
-  updated() {},
-  beforeDestroy() {},
-  destroyed() {},
-  shouldMount() {
-    return true;
-  },
-  shouldUpdate() {
-    return true;
+  mind: {
+    className: "tsm-container",
+    providers: [],
+    style: {},
+    beforeCreate() {
+      console.log("Mind: beforeCreate", this);
+    },
+    created() {
+      console.log("Mind: created", this);
+    },
+    beforeMount() {
+      console.log("Mind: beforeMount", this);
+    },
+    mounted() {
+      console.log("Mind: mounted", this);
+    },
+    unmounted() {
+      console.log("Mind: unmounted", this);
+    },
+    beforeUpdate() {
+      console.log("Mind: beforeUpdate", this);
+    },
+    updated() {
+      console.log("Mind: updated", this);
+    },
+    beforeDestroy() {
+      console.log("Mind: beforeDestroy", this);
+    },
+    destroyed() {
+      console.log("Mind: destroyed", this);
+    },
+    shouldMount() {
+      console.log("Mind: shouldMount", this);
+      return true;
+    },
+    shouldUpdate() {
+      console.log("Mind: shouldUpdate", this);
+      return true;
+    }
   }
 };

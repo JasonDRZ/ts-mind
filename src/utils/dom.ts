@@ -19,7 +19,7 @@ export function appendChild(parent: HTMLElement, child: any) {
   }
 }
 // add an element event listener
-export function addEvent(target: Document | Element, event: string, call: ITSMAnyCall, bunble: boolean = false) {
+export function addEvent(target: Document | Element, event: string, call: IMAnyCall, bunble: boolean = false) {
   target.addEventListener(event, call, bunble);
 }
 // get CSSStyleDeclaration property value

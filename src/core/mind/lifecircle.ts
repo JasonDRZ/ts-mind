@@ -1,8 +1,13 @@
-import { destroyObject } from "utils/tools";
-import { IMMindHooks, IMMindOptionsDef } from "./defs";
+import { destroyObject, extend, Logger } from "utils/tools";
+import { IMMindEntryOptionsDef, IMMindHooksDef, IMMindProvider, IMMindEntryOptions } from "./defs";
+import { DEFAULT_OPTIONS } from "utils/constants";
+import { Topic } from "core/Topic";
 
 export class MindLifecircle {
-  public options: IMMindOptionsDef;
+  // mind meta
+  public meta: IMSourceMeta;
+  // mind options
+  public options: IMMindEntryOptionsDef;
   // state flags
   public _mounted: boolean = false;
   public _destroyed: boolean = false;
@@ -11,12 +16,27 @@ export class MindLifecircle {
     selected: false,
     expanded: true
   };
-  constructor(options: IMMindOptionsDef) {
-    this.options = options;
+  public data = {
+    view: {},
+    providers: {}
+  };
+  public providers: IMMindProvider[] = [];
+  // mind private partners
+  public logger = new Logger(this.options.debug);
+
+  // support multiple roots,each other root could be other topic's child topic.
+  public rootTopic: Topic;
+  // manage all selected topics
+  public topicSelectedMap: Map<string, Topic> = new Map();
+  // all registered topics map,key is topic's id;
+  public topicCollectedMap: Map<string, Topic> = new Map();
+
+  constructor(options: IMMindEntryOptions) {
+    this.options = extend(true, DEFAULT_OPTIONS, options);
     this.$beforeCreate();
   }
-  public readonly __callHook = (name: keyof IMMindHooks, ...args: any[]) => {
-    return this.options.capturedError(this.options.debug, () => this.options[name].apply(this, [this, ...args]));
+  public readonly __callHook = (name: keyof IMMindHooksDef, ...args: any[]) => {
+    return this.options.capturedError(this.options.debug, () => this.options.mind[name].apply(this, [this, ...args]));
   };
   // life hooks
   public readonly $destroy = () => {

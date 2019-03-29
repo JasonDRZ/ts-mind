@@ -11,6 +11,7 @@ export declare class TopicProviderInstance {
 export type IMTopicProvider = IMProviderCustom<Topic, TopicProviderInstance>;
 
 export interface IMTopicOptions extends IMTopicHooks {
+  // common options
   classNames?: {
     container?: string;
     topicBox?: string;
@@ -22,6 +23,12 @@ export interface IMTopicOptions extends IMTopicHooks {
 }
 
 export interface IMTopicOptionsDef extends IMTopicHooksDef {
+  // private options
+  position: {
+    x: number;
+    y: number;
+  };
+  // common options
   classNames: {
     container: string;
     topicBox: string;

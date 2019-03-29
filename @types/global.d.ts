@@ -2,9 +2,9 @@
  * COMMON PART
  */
 // mind direction tag
-type IMDirection = "center" | "top" | "right" | "bottom" | "left";
+type IMDirection = "left" | "sides" | "right" | "bottom";
 // mind direction value
-type IMDirectionValue = 0 | 1 | 2 | 3 | 4;
+type IMDirectionValue = -1 | 0 | 1 | 2;
 // event name
 type IMEventType = "show" | "resize" | "edit" | "select" | "mousedown" | "click" | "dblclick";
 // event name goust
@@ -15,12 +15,21 @@ type IMEmpty = undefined | null | "";
 type IMUnionNull<Tar> = Tar | null;
 type IMKeyValue<V = any> = { [k: string]: V };
 
-type IMMode = "top" | "left" | "left-right" | "right" | "bottom" | "center";
+type IMMode = IMDirection;
 type IMTheme = string;
 
 type IMProviderType = "mind" | "topic" | "data";
 
 type IMCSSStyleMap = IMKeyValue;
+
+interface IMPosition {
+  x: number;
+  y: number;
+}
+interface IMPositionDefect {
+  x?: number;
+  y?: number;
+}
 
 /**
  * CUSTOM PART, WIDTH NAMESPACE

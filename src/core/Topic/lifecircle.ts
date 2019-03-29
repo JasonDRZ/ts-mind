@@ -1,11 +1,26 @@
-import { destroyObject } from "utils/tools";
+import { destroyObject, mergeObject } from "utils/tools";
 import { Mind } from "../Mind";
 import { IMTopicHooks, TopicProviderInstance, IMTopicOptionsDef } from "./defs";
+
+export interface IMTopicData {
+  // for view data store
+  view?: {
+    position?: IMPosition;
+    [k: string]: any;
+  };
+  // for every provider's data
+  providers?: {
+    // [typeid]: providerData
+    [k: string]: any;
+  };
+}
 
 export class TopicLifecircle {
   // topic  options, index of configuration.
   public options: IMTopicOptionsDef;
   public vm: Mind;
+  // is cloned node tag
+  public isClone: boolean = false;
   // state flags
   public _mounted: boolean = false;
   public _destroyed: boolean = false;
@@ -15,13 +30,30 @@ export class TopicLifecircle {
     expanded: true
   };
   public providers: IMKeyValue<TopicProviderInstance> = {};
-  constructor(vm: Mind, options: IMTopicOptionsDef) {
+  // topic private data;
+  public data = {
+    // for view data store
+    view: {
+      position: {
+        x: 0,
+        y: 0
+      }
+    },
+    // for every provider's data
+    providers: {
+      // [typeid]: providerData
+    }
+  };
+  constructor(vm: Mind, options: IMTopicOptionsDef, data: IMTopicData = {}) {
     this.vm = vm;
     this.options = options;
+    Object.keys(data).map(key => {
+      mergeObject(this.data[key], data[key]);
+    });
     this.$beforeCreate();
   }
   public readonly __callHook = (name: keyof IMTopicHooks, ...args: any[]) => {
-    return this.options[name].apply(this, [this, ...args]);
+    return this.vm.options.capturedError(this.vm.options.debug, () => this.options[name].apply(this, [this, ...args]));
   };
   // life hooks
   public readonly $destroy = () => {

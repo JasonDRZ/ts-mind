@@ -24,27 +24,8 @@ export interface IMMindHooks {
 }
 
 export type IMAnyProvider = IMTopicProvider | IMMindProvider;
-export interface IMMindOptions extends IMMindHooks {
-  container: string | HTMLElement;
-  theme?: IMTheme;
-  editable?: boolean;
-  mode?: IMMode;
-  debug?: boolean;
-  providers?: IMAnyProvider[];
-  topic?: IMTopicOptions;
-  capturedError?(debug: boolean, error: any): void;
-  [k: string]: any;
-}
 
-export interface IMMindOptionsDef extends IMMindOptions {
-  container: string | HTMLElement;
-  theme: IMTheme;
-  editable: boolean;
-  mode: IMMode;
-  debug: boolean;
-  providers: IMAnyProvider[];
-  topic: IMTopicOptionsDef;
-  capturedError(debug: boolean, error: any): void;
+export interface IMMindHooksDef {
   beforeCreate(this: Mind, VM: Mind): void;
   created(this: Mind, VM: Mind): void;
   beforeMount(this: Mind, VM: Mind): void;
@@ -56,4 +37,42 @@ export interface IMMindOptionsDef extends IMMindOptions {
   destroyed(this: Mind, VM: Mind): void;
   shouldMount(this: Mind, VM: Mind): boolean;
   shouldUpdate(this: Mind, VM: Mind): boolean;
+}
+
+export interface IMMindOptions extends IMMindHooks {
+  className?: string;
+  providers?: IMMindProvider[];
+  style?: IMCSSStyleMap;
+}
+
+export interface IMMindOptionsDef extends IMMindHooksDef {
+  className: string;
+  providers: IMMindProvider[];
+  style: IMCSSStyleMap;
+}
+
+export interface IMMindEntryOptions {
+  container: string | HTMLElement;
+  theme?: IMTheme;
+  editable?: boolean;
+  mode?: IMMode;
+  debug?: boolean;
+  providers?: IMAnyProvider[];
+  topic?: IMTopicOptions;
+  mind?: IMMindOptions;
+  capturedError?(debug: boolean, error: any): void;
+  [k: string]: any;
+}
+
+export interface IMMindEntryOptionsDef {
+  container: string | HTMLElement;
+  theme: IMTheme;
+  editable: boolean;
+  mode: IMMode;
+  debug: boolean;
+  providers: IMAnyProvider[];
+  topic: IMTopicOptionsDef;
+  mind: IMMindOptionsDef;
+  capturedError(debug: boolean, error: any): void;
+  [k: string]: any;
 }

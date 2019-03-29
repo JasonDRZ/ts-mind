@@ -1,4 +1,4 @@
-import { TopicLifecircle } from "./lifecircle";
+import { TopicLifecircle, IMTopicData } from "./lifecircle";
 import { TopicView } from "./view";
 import { Mind, queryTopic } from "../Mind";
 import { IMTopicOptionsDef } from "./defs";
@@ -22,6 +22,7 @@ export interface IMTopicProps {
   isFree?: boolean;
   direction?: IMDirectionValue;
   expanded?: boolean;
+  data?: IMTopicData;
 }
 
 export class Topic extends TopicLifecircle {
@@ -56,8 +57,6 @@ export class Topic extends TopicLifecircle {
    */
   // current topic's direction
   public direction: IMDirectionValue;
-  // topic private data;
-  public data: IMTopicPrivateData = {};
 
   // current topic's children nodes
   public children: Topic[] = [];
@@ -66,9 +65,6 @@ export class Topic extends TopicLifecircle {
   public view: TopicView;
   // layout layer
   public layout: TopicView;
-
-  // is cloned node tag
-  public isClone: boolean = false;
 
   constructor(
     vm: Mind,
@@ -80,6 +76,7 @@ export class Topic extends TopicLifecircle {
       parentId,
       rootId,
       branchId,
+      data,
       index = Infinity,
       isRoot = false,
       isFree = false,
@@ -88,7 +85,7 @@ export class Topic extends TopicLifecircle {
     }: IMTopicProps,
     options: IMTopicOptionsDef
   ) {
-    super(vm, options);
+    super(vm, options, data);
     if (!id || !topic) {
       throw Error(`The params (id,topic) are all required,when create an Topic!In order to reduce the loss of Topic-searching performance.`);
     }
@@ -131,6 +128,9 @@ export class Topic extends TopicLifecircle {
   // modify this topic content
   public modifyTopic = (topic: string) => {
     return modifyTopic(this, topic);
+  };
+  public changeMode = (mode: IMMode) => {
+    this.view.changeMode(mode);
   };
 
   /**

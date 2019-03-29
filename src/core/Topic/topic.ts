@@ -1,36 +1,9 @@
-import { Mind, queryTopic } from "core.2/Mind";
-import { extend, randomId } from "utils/tools";
+import { Mind, queryTopic } from "core/Mind";
+import { extend, randomId, initAnyProviders } from "utils/tools";
 import { Topic } from ".";
 
 export function initProviders(vt: Topic) {
-  const provs = vt.options.providers;
-  if (provs && provs.length > 0) {
-    // provider data bank
-    provs.map(Provider => {
-      const _tid = Provider.typeId;
-      // data must be an object
-      vt.data[_tid] = vt.data[_tid] || {};
-      const _provider = new Provider(vt);
-      // get provider initial data
-      let _defData = _provider.data || {};
-      _defData = typeof _defData === "function" ? _defData() : _defData;
-      // assign initial provider data
-      Object.assign(vt.data[_tid], _defData);
-      // redefined data attr
-      Object.defineProperty(_provider, "data", {
-        enumerable: true,
-        configurable: false,
-        get() {
-          const _bid = _tid;
-          return vt.data[_bid];
-        },
-        set(v: any) {
-          throw Error(`Provider data can not be replaced,please use Object.assign() instead.`);
-        }
-      });
-      vt.providers[_tid] = _provider;
-    });
-  }
+  initAnyProviders(vt, vt.options.providers, vt.data.providers);
 }
 
 // some new vtopic instance could extend his future parent's stuff.
@@ -71,7 +44,8 @@ export function vtClone(vt: Topic): Topic {
 export function modifyTopic(vt: Topic, topic: string): boolean {
   if (topic === vt.topic) return false;
   vt.topic = topic;
-  vt.view.updateTopic(topic);
+  // vt.view.updateTopic(topic);
+  // TODO: 需要进行数据驱动设计
   return true;
 }
 
