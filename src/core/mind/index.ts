@@ -1,32 +1,45 @@
 import { Topic, IMTopicProps, IMTopic } from "../Topic";
 import { IMMindEntryOptions } from "./defs";
-import { addTopic, moveTopicTo, removeTopic, selectTopic, deselectTopic, collectTopic } from "./mind";
+import { addTopic, moveTopicTo, removeTopic, selectTopic, deselectTopic, collectTopic, initProviders } from "./mind";
 import { MindView } from "./view";
-import { MindLayout } from "./layout";
 import { MindLifecircle } from "./lifecircle";
-import { whileFor } from 'utils/tools';
+import { whileFor } from "../../utils/tools";
+import { Layout } from "../layouts";
 export * from "./mind";
-
-export const TSMindSupportedModes = ["left", "sides", "right", "bottom"];
 
 export class Mind extends MindLifecircle {
   // static APIs
   static Topic = Topic;
 
-  public view: MindView = new MindView(this);
-  public layout: MindLayout = new MindLayout(this);
+  public view: MindView;
+  public layout: Layout;
 
   constructor(options: IMMindEntryOptions) {
     super(options);
+    this.initProviders();
+    // TODO: 重新整理Hooks，删掉不必要的hook。
+    this.$beforeCreate();
+    this.$created();
+    // mount hooks
+    this.$beforeMount();
+    this.layout = new Layout(this);
+    this.view = new MindView(this);
+    this.$mounted();
   }
-
+  public initProviders = () => {
+    initProviders(this);
+  };
   /**
    * load
    */
   public load(data: any[]) {
     whileFor(data, (item, idx) => {
       this.addTopic(item);
-    })
+    });
+    this.rootTopic.view.mount();
+    setTimeout(() => {
+      this.layout.layout(true);
+    }, 0);
   }
 
   public collectTopic(vt: Topic) {

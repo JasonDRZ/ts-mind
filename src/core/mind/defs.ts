@@ -1,6 +1,8 @@
 import { Mind } from ".";
 import { IMTopicProvider, IMTopicOptions, IMTopicOptionsDef } from "../Topic";
+import { IMLayoutMode } from "../layouts";
 export declare class MindProviderInstance {
+  vm: Mind;
   data?: object | (() => object);
   mounted(): void;
   updated(): void;
@@ -8,6 +10,18 @@ export declare class MindProviderInstance {
   [k: string]: any;
 }
 export type IMMindProvider = IMProviderCustom<Mind, MindProviderInstance>;
+
+export class MindProvider {
+  typeId: string;
+  vm: Mind;
+  data: object | (() => object) = {};
+  constructor(vm: Mind) {
+    this.vm = vm;
+  }
+  mounted() {}
+  updated() {}
+  destroyed() {}
+}
 
 export interface IMMindHooks {
   beforeCreate?(this: Mind, VM: Mind): void;
@@ -39,40 +53,30 @@ export interface IMMindHooksDef {
   shouldUpdate(this: Mind, VM: Mind): boolean;
 }
 
-export interface IMMindOptions extends IMMindHooks {
-  className?: string;
-  providers?: IMMindProvider[];
-  style?: IMCSSStyleMap;
-}
-
-export interface IMMindOptionsDef extends IMMindHooksDef {
-  className: string;
-  providers: IMMindProvider[];
-  style: IMCSSStyleMap;
-}
-
-export interface IMMindEntryOptions {
+export interface IMMindEntryOptions extends IMMindHooks {
   container: string | HTMLElement;
   theme?: IMTheme;
   editable?: boolean;
-  mode?: IMMode;
+  mode?: IMLayoutMode;
   debug?: boolean;
-  providers?: IMAnyProvider[];
+  providers?: IMKeyValue<IMMindProvider>;
+  className?: string;
+  style?: IMCSSStyleMap;
   topic?: IMTopicOptions;
-  mind?: IMMindOptions;
   capturedError?(debug: boolean, error: any): void;
   [k: string]: any;
 }
 
-export interface IMMindEntryOptionsDef {
+export interface IMMindEntryOptionsDef extends IMMindHooksDef {
   container: string | HTMLElement;
   theme: IMTheme;
   editable: boolean;
-  mode: IMMode;
+  mode: IMLayoutMode;
   debug: boolean;
-  providers: IMAnyProvider[];
   topic: IMTopicOptionsDef;
-  mind: IMMindOptionsDef;
+  classNames: { canvas: string; container: string };
+  providers: IMKeyValue<IMMindProvider>;
+  style: IMCSSStyleMap;
   capturedError(debug: boolean, error: any): void;
   [k: string]: any;
 }

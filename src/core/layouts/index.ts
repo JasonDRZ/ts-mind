@@ -1,12 +1,27 @@
-import { Mind } from "core/Mind";
-import { Topic } from "core/Topic";
-import { whileFor } from "utils/tools";
-import { eleAbsolute } from "utils/view";
-import { TSMindDirectionMap } from 'utils/constants';
+import { Topic } from "../Topic";
+import { whileFor } from "../../utils/tools";
+import { Mind } from "../Mind";
+import { LeftMode } from "./LeftMode";
+import { RightMode } from "./RightMode";
+import { SidesMode } from "./SidesMode";
+import { IMLayoutMindBorder } from "../Mind/layout";
 
 // 100px
-const ROOT_SPACE = 100;
-const BRANCH_BETWEEN = 0;
+export const ROOT_SPACE = 120;
+export const BRANCH_BETWEEN = 10;
+
+// mind direction value
+export type IMLayoutModeValue = -1 | 0 | 1 | 2;
+// supported direction mode
+export type IMLayoutMode = "left" | "center" | "right" | "sides";
+
+export enum LayoutModeEnum {
+  "left" = -1,
+  "center" = 0,
+  "right" = 1,
+  "sides" = 2
+}
+
 // side order rule
 /**
  * left:
@@ -29,113 +44,53 @@ const BRANCH_BETWEEN = 0;
  * 2 - 1
  * 4 - 3
  */
-export const LayoutMode = {
-  left(vm: Mind, branches: Topic[], force: true = true) {
-    const root = vm.rootTopic;
-    const rootPosition = root.view.getPosition();
-    const rootSize = root.view.getSize().container;
-    // to balance center position
-    let totalHeight = BRANCH_BETWEEN;
-    const _dir = -1;
-    whileFor(branches, bch => {
-      const _cont = bch.view.getSize().container;
-      totalHeight += _cont.h + BRANCH_BETWEEN;
-    });
-    // desc[max->min]
-    let beginX = rootPosition.x + _dir * (rootSize.w / 2 + ROOT_SPACE);
-    // asc[min->max]
-    let beginY = rootPosition.y + _dir * (rootSize.h / 2 + totalHeight / 2 + BRANCH_BETWEEN);
-    let mnx = 0;
-    let mny = beginY;
-    let mxx = rootPosition.x + rootSize.w / 2;
-    let mxy = rootPosition.y + rootSize.h / 2;
-    whileFor(branches, bch => {
-      const _cont = bch.view.getSize().container;
-      const x = beginX + _dir * _cont.w;
-      mnx = Math.min(mnx, x);
-      eleAbsolute(bch.view.$els.container);
-      bch.view.setPosition({
-        y: beginY,
-        x
-      });
-      mxy = Math.max(beginY, mxy);
-      beginY += _cont.h + BRANCH_BETWEEN;
-    });
-    return {
-      mnx,
-      mny,
-      mxx,
-      mxy
-    };
-  },
-  right(vm: Mind, branches: Topic[], force: true = true) {
-    const root = vm.rootTopic;
-    const rootPosition = root.view.getPosition();
-    const rootSize = root.view.getSize().container;
-    // to balance center position
-    let totalHeight = BRANCH_BETWEEN;
-    const _dir = 1;
-    whileFor(branches, bch => {
-      const _cont = bch.view.getSize().container;
-      totalHeight += _cont.h + BRANCH_BETWEEN;
-    });
-    // asc[min->max]
-    let beginX = rootPosition.x + _dir * (rootSize.w / 2 + ROOT_SPACE);
-    // asc[min->max]
-    let beginY = rootPosition.y + _dir * (rootSize.h / 2 + totalHeight / 2 + BRANCH_BETWEEN);
-    let mnx = rootPosition.x - rootSize.w / 2;
-    let mny = Math.min(beginY, rootPosition.y - rootSize.h / 2);
-    let mxx = beginX;
-    let mxy = beginY;
-    whileFor(branches, bch => {
-      const _cont = bch.view.getSize().container;
-      const xw = _cont.w + beginX;
-      eleAbsolute(bch.view.$els.container);
-      bch.view.setPosition({
-        y: beginY,
-        x: beginX
-      });
-      beginY += _cont.h + BRANCH_BETWEEN;
-      mxy = Math.max(beginY, mxy);
-      mxx = Math.max(mxx, xw);
-    });
-    return {
-      mnx,
-      mny,
-      mxx,
-      mxy
-    };
-  },
-  sides(vm: Mind, branches: Topic[], force: boolean = false) {
-    const leftSide: Topic[] = [];
-    const rightSide: Topic[] = [];
-    whileFor(branches, bch => {
-      if (force) {
-        // trade all as direction === 'sides', and set direction
-        rightSide.length < leftSide.length
-          ? (rightSide.push(bch), (bch.direction = TSMindDirectionMap.right))
-          : (leftSide.push(bch), TSMindDirectionMap.left);
-      } else {
-        // already splited
-        if (bch.direction === TSMindDirectionMap.left) {
-          leftSide.push(bch);
-        } else if (bch.direction === TSMindDirectionMap.right) {
-          rightSide.push(bch);
-        } else {
-          // direction === 'sides', and set direction
-          rightSide.length < leftSide.length
-            ? (rightSide.push(bch), (bch.direction = TSMindDirectionMap.right))
-            : (leftSide.push(bch), TSMindDirectionMap.left);
-        }
-      }
-    });
-    const leftBorder = LayoutMode.left(vm, leftSide);
-    const rightBorder = LayoutMode.right(vm, rightSide);
-    return {
-      mnx: Math.min(leftBorder.mnx, rightBorder.mnx),
-      mny: Math.min(leftBorder.mny, rightBorder.mny),
-      mxx: Math.max(leftBorder.mxx, rightBorder.mxx),
-      mxy: Math.max(leftBorder.mxy, rightBorder.mxy)
-    };
+export interface IMLayoutApi {
+  mode: string;
+  direction(topic: Topic): void;
+  layout(vm: Mind, force: boolean): IMLayoutMindBorder;
+}
+export interface IMLayoutConstructor {
+  new (): IMLayoutApi;
+}
+
+const DefaultLayoutMode = new RightMode();
+const LayoutModeMap = new Map<string, IMLayoutApi>([["left", new LeftMode()], ["right", DefaultLayoutMode], ["sides", new SidesMode()]]);
+
+export function registerLayoutMode(layoutApi: IMLayoutApi | IMLayoutConstructor) {
+  const _layout = typeof layoutApi === "function" ? new layoutApi() : layoutApi;
+  LayoutModeMap.set(_layout.mode, _layout);
+}
+
+export class Layout {
+  vm: Mind;
+  mode: IMLayoutModeValue;
+  constructor(vm: Mind) {
+    this.vm = vm;
+    this.mode = LayoutModeEnum[vm.options.mode];
   }
-};
+  private _changeAllTopicDirection(topic: Topic = this.vm.rootTopic) {
+    topic.direction = LayoutModeEnum.center;
+    this.computeTopicDirection(topic);
+    whileFor(topic.children, _topic => this._changeAllTopicDirection(_topic));
+  }
+  getLayoutMode = (mode: IMLayoutModeValue = this.mode): IMLayoutApi => {
+    return LayoutModeMap.get(LayoutModeEnum[mode]) || DefaultLayoutMode;
+  };
+  changeMode = (newMode: IMLayoutMode) => {
+    this.mode = LayoutModeEnum[newMode];
+    this.layout(true);
+  };
+  layout = (force: boolean = false) => {
+    if (force) this._changeAllTopicDirection();
+    const viewBorder = this.getLayoutMode().layout(this.vm, force);
+    this.vm.view.updateSize({
+      width: viewBorder.leftTop[0] - viewBorder.rightBottom[0],
+      height: viewBorder.leftTop[1] - viewBorder.rightBottom[1]
+    });
+    return viewBorder;
+  };
+  // computing topic's view direction width current layout mode.
+  computeTopicDirection = (topic: Topic) => {
+    this.getLayoutMode().direction(topic);
+  };
+}

@@ -1,6 +1,7 @@
-import { Mind, queryTopic } from "core/Mind";
-import { extend, randomId, initAnyProviders } from "utils/tools";
-import { Topic } from ".";
+import { Mind, queryTopic } from "../Mind";
+import { extend, randomId, initAnyProviders } from "../../utils/tools";
+import { Topic, IMTopicExportData } from ".";
+import { IMChangeTopicAttrKey } from "./lifecircle";
 
 export function initProviders(vt: Topic) {
   initAnyProviders(vt, vt.options.providers, vt.data.providers);
@@ -109,7 +110,7 @@ export function getTopicData(vt: Topic): IMTopicExportData {
     direction: vt.direction,
     isRoot: vt.isRoot,
     parentId: vt.parent!.id,
-    expanded: vt.state.expanded,
+    expanded: vt.expanded,
     data: vt.data
   };
 }
@@ -123,17 +124,18 @@ export function addChild(vt: Topic, cvt: Topic) {
     cvt.branch = vt.branch;
   } else {
     // calculate direction
-    cvt.direction = computeRootChildDirection(vt);
+    // TODO: Topic Direction compute
+    // cvt.direction = computeRootChildDirection(vt);
     // is branch topic
     cvt.isBranch = true;
     cvt.branch = cvt;
   }
   cvt.parent = vt;
   // vt value [Infinity] can just show once,then
-  if (Number.isFinite(vt.index)) {
-    vt.children.push(vt);
+  if (Number.isFinite(cvt.index)) {
+    vt.children.push(cvt);
   } else {
-    vt.children.splice(vt.index, 0, vt);
+    vt.children.splice(cvt.index, 0, cvt);
   }
   cvt.view.mount();
   // update children index, after pushed or inserted.
@@ -152,67 +154,35 @@ function reindexChildren(vt: Topic) {
   });
 }
 
-// compute next insert node direction，base on root node;
-export function computeRootChildDirection(vt: Topic): IMDirectionValue {
-  // TODO: comput child topic's direction.
-  // const mode = vt.vm.options.mode;
-  // switch (mode) {
-  //   case "left": {
-  //     break;
-  //   }
-  //   case "left": {
-  //     break;
-  //   }
-  //   case "left": {
-  //     break;
-  //   }
-  //   case "left": {
-  //     break;
-  //   }
-  //   case "left": {
-  //     break;
-  //   }
-  // }
-  // // the should considered mind mode
-  // const children = vt.children;
-  // const dirKeys = Object.keys(TSMindDirectionMap);
-  // // reset direction counts
-  // const dirCount = Array(dirKeys.length).fill(0);
-  // children.map(child => {
-  //   dirCount[dirKeys.indexOf(TSMindDirectionEnum[child.direction])]++;
-  // });
-  // const _min = Math.min.apply(null, dirCount);
-  //
-  return 0; //TSMindDirectionMap[dirKeys[dirCount.indexOf(_min)]];
-}
-
 // tool methods
 export function branch(rvt: Topic) {
   const rid = rvt.id;
   return {
     // To determine vt topic weather belongs to some parent topic;
-    hasChild(cvt: Topic): boolean {
+    hasChild(cvt: Topic, findDeep: boolean = false): boolean {
       if (!(cvt instanceof Topic)) {
         throw Error(`The target child should be an instance of Topic!`);
       }
-      // same vtopic
-      if (rvt.id === cvt.id) return true;
       // parent is root vtopic
       if (rvt.isRoot) return true;
-      // not root parent internal searching
+      // same vtopic
+      if (rvt.id === cvt.id) return true;
+      // internal searching
       let _pvt = cvt.parent;
       do {
         if (!_pvt) return false;
         if (_pvt.id === rid) return true;
-        _pvt = _pvt.parent;
-      } while (cvt.parent);
+        // deep searching
+        if (findDeep) _pvt = _pvt.parent;
+        else _pvt = undefined;
+      } while (!!_pvt);
       return false;
     },
     // find some topic from a declared parent topic
-    findChild(id: string): null | Topic {
+    findChild(id: string, findDeep: boolean = false): null | Topic {
       for (const child of rvt.children) {
         if (child.id === id) return child;
-        else if (child.children.length > 0) {
+        else if (findDeep && child.children.length > 0) {
           const _fd = branch(child).findChild(id);
           if (_fd) return _fd;
         }
@@ -222,4 +192,19 @@ export function branch(rvt: Topic) {
   };
 }
 
-export default Topic;
+export function setAttribute(topic: Topic, attr: IMChangeTopicAttrKey, value: any) {
+  switch (attr) {
+    case "index": {
+      if (value !== topic.index && topic.parent) {
+        topic.parent;
+      }
+      break;
+    }
+    case "direction": {
+      if (value !== topic.direction) {
+        topic.direction = value;
+        topic.view.changeModeClassName();
+      }
+    }
+  }
+}

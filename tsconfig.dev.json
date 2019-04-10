@@ -1,8 +1,9 @@
 {
-	"extends": "./tsconfig.json",
-	"compilerOptions": {
-		"module": "esnext",
-		"outDir": "lib-es",
-		"target": "esnext"
-	}
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "removeComments": true,
+    "module": "esnext",
+    "outDir": "lib-es",
+    "target": "es5"
+  }
 }

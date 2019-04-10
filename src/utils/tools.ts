@@ -1,5 +1,5 @@
-import { Topic} from "core/Topic";
-import { Mind } from "core/Mind";
+import { Topic } from "../core/Topic";
+import { Mind } from "../core/Mind";
 
 export const _slice = Array.prototype.slice;
 
@@ -16,11 +16,21 @@ export class Logger {
   constructor(isDebug: boolean) {
     this._handler = isDebug ? _loggerHandler : () => _noop;
   }
-  log = this._handler("log");
-  debug = this._handler("debug");
-  error = this._handler("error");
-  warn = this._handler("warn");
-  info = this._handler("info");
+  log(...args: any[]) {
+    this._handler.apply("log", args);
+  }
+  debug(...args: any[]) {
+    this._handler.apply("debug", args);
+  }
+  error(...args: any[]) {
+    this._handler.apply("error", args);
+  }
+  warn(...args: any[]) {
+    this._handler.apply("warn", args);
+  }
+  info(...args: any[]) {
+    this._handler.apply("info", args);
+  }
 }
 
 export function str(str: string, beg: string) {
@@ -152,7 +162,7 @@ export function debounce<T extends any[] = any[]>(handler: IMAnyCall<T, void>, t
   function _dbce(this: any, ...args: T): void {
     const _ctx = this;
     if (_timer) {
-      return;
+      clearTimeout(_timer);
     }
     _timer = setTimeout(() => {
       handler.apply(_ctx, args);
@@ -165,6 +175,33 @@ export function debounce<T extends any[] = any[]>(handler: IMAnyCall<T, void>, t
     _timer = null;
   };
   return _dbce;
+}
+
+export function throttle<T extends any[] = any[]>(handler: IMAnyCall<T, void>, tick: number = 10) {
+  let _lastTime: any = 0;
+  let _timer: any;
+  function _throte(this: any, ...args: T): void {
+    const _ctx = this;
+    const _now = Date.now();
+    if (_now >= _lastTime + tick) {
+      handler.apply(_ctx, args);
+      _lastTime = _now;
+    } else {
+      //执行最后一次
+      if (_timer) {
+        clearTimeout(_timer);
+      }
+      _timer = setTimeout(() => {
+        handler.apply(_ctx, args);
+        _timer = null;
+      }, _now - _lastTime);
+    }
+  }
+  _throte.clear = () => {
+    clearTimeout(_timer);
+    _timer = null;
+  };
+  return _throte;
 }
 
 // whether str is empty,including space char;
@@ -240,13 +277,14 @@ export function randomId() {
   ).substr(2, 16);
 }
 
-export function initAnyProviders<Provider extends IMProviderCustom<any, any>>(ctx: Topic | Mind, providers: Array<Provider>, store: IMKeyValue) {
+export function initAnyProviders<Provider extends IMProviderCustom<any, any>>(ctx: Topic | Mind, providers: IMKeyValue<Provider>, store: IMKeyValue) {
   // provider data bank
-  providers.map(Provider => {
-    const _tid = Provider.typeId;
+  Object.keys(providers).map(_tid => {
+    const provider = providers[_tid];
     // data must be an object
+    const _provider = new provider(ctx as any);
+    console.info(_provider);
     store[_tid] = store[_tid] || {};
-    const _provider = new Provider(ctx as any);
     // get provider initial data
     let _defData = _provider.data || {};
     _defData = typeof _defData === "function" ? _defData() : _defData;
@@ -265,6 +303,7 @@ export function initAnyProviders<Provider extends IMProviderCustom<any, any>>(ct
       }
     });
     ctx.providers[_tid] = _provider;
+    ctx.providers.push(_provider as any);
   });
 }
 
@@ -281,6 +320,7 @@ export function whileMap<RItem = any, Item = any>(arr: Item[], cb: (item: Item, 
 }
 
 export function whileFor<Item = any>(arr: Item[], cb: (item: Item, idx: number, arr: Item[]) => void): void {
+  if (arr.length === 0) return;
   const _slen = arr.length - 1;
   let _len = _slen;
   while (_len >= 0) {

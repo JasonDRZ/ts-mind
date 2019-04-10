@@ -1,4 +1,4 @@
-import Topic from "./topic";
+import { Topic } from ".";
 export declare class TopicProviderInstance {
   data?: object | (() => object);
   mounted(): void;
@@ -35,7 +35,7 @@ export interface IMTopicOptionsDef extends IMTopicHooksDef {
     topic: string;
     children: string;
   };
-  providers: IMTopicProvider[];
+  providers: IMKeyValue<IMTopicProvider>;
   style: IMCSSStyleMap;
 }
 

@@ -1,10 +1,6 @@
 /**
  * COMMON PART
  */
-// mind direction tag
-type IMDirection = "left" | "sides" | "right" | "bottom";
-// mind direction value
-type IMDirectionValue = -1 | 0 | 1 | 2;
 // event name
 type IMEventType = "show" | "resize" | "edit" | "select" | "mousedown" | "click" | "dblclick";
 // event name goust
@@ -15,7 +11,6 @@ type IMEmpty = undefined | null | "";
 type IMUnionNull<Tar> = Tar | null;
 type IMKeyValue<V = any> = { [k: string]: V };
 
-type IMMode = IMDirection;
 type IMTheme = string;
 
 type IMProviderType = "mind" | "topic" | "data";
@@ -38,19 +33,6 @@ interface IMPositionDefect {
 type IMTopicTopic = string;
 type IMTopicPrivateData<T = {}> = IMKeyValue & T;
 type IMMindPrivateData<T = {}> = IMKeyValue & T;
-// Topic export data
-type IMTopicExportData = {
-  id: string;
-  topic: IMTopicTopic;
-  index: number;
-  direction: IMDirectionValue;
-  isRoot: boolean;
-  // root topic has no parent topic
-  parentId?: string;
-  expanded: boolean;
-  data: IMTopicPrivateData;
-};
-type IMMindData<EX = {}> = Map<string, IMTopicExportData & EX>;
 
 /**
  * DATA SOURCE
@@ -72,8 +54,7 @@ interface IMSourceMeta {
  * provider defination
  */
 interface IMProviderStatic {
-  readonly typeId: string;
-  readonly type: "mind" | "topic" | "data";
+  typeId: string;
 }
 interface IMProviderCustom<CTX, ProviderAPI> extends IMProviderStatic {
   new (vm: CTX): ProviderAPI;

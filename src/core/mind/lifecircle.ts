@@ -1,7 +1,7 @@
-import { destroyObject, extend, Logger } from "utils/tools";
-import { IMMindEntryOptionsDef, IMMindHooksDef, IMMindProvider, IMMindEntryOptions } from "./defs";
-import { DEFAULT_OPTIONS } from "utils/constants";
-import { Topic } from "core/Topic";
+import { destroyObject, extend, Logger } from "../../utils/tools";
+import { IMMindEntryOptionsDef, IMMindHooksDef, IMMindEntryOptions, MindProviderInstance } from "./defs";
+import { DEFAULT_OPTIONS } from "../../utils/constants";
+import { Topic } from "../Topic";
 
 export class MindLifecircle {
   // mind meta
@@ -20,9 +20,9 @@ export class MindLifecircle {
     view: {},
     providers: {}
   };
-  public providers: IMMindProvider[] = [];
+  public providers: MindProviderInstance[] = [];
   // mind private partners
-  public logger = new Logger(this.options.debug);
+  public logger: Logger;
 
   // support multiple roots,each other root could be other topic's child topic.
   public rootTopic: Topic;
@@ -33,10 +33,17 @@ export class MindLifecircle {
 
   constructor(options: IMMindEntryOptions) {
     this.options = extend(true, DEFAULT_OPTIONS, options);
-    this.$beforeCreate();
+    this.logger = new Logger(this.options.debug);
   }
   public readonly __callHook = (name: keyof IMMindHooksDef, ...args: any[]) => {
-    return this.options.capturedError(this.options.debug, () => this.options.mind[name].apply(this, [this, ...args]));
+    return this.options.capturedError(this.options.debug, () => {
+      // call mind hooks
+      this.options[name].apply(this, [this, ...args]);
+      // trigger providers hooks
+      this.providers.map(prov => {
+        prov[name] && prov[name]();
+      });
+    });
   };
   // life hooks
   public readonly $destroy = () => {

@@ -1,8 +1,8 @@
-import Topic from "./topic";
-import { createElementWidthClassName, applyElementStyle, updateElePosition } from "utils/view";
+import { Topic } from ".";
+import { createElementWidthClassName, applyElementStyle, updateElePosition } from "../../utils/view";
 import { IMTopicOptionsDef } from "./defs";
-import { mergeObject } from "utils/tools";
-import { TSMindSupportedModes } from "core/Mind";
+import { mergeObject } from "../../utils/tools";
+import { LayoutModeEnum } from "../layouts";
 
 export class TopicView {
   public vt: Topic;
@@ -57,14 +57,19 @@ export class TopicView {
   public initElements = (cloneNodes?: HTMLDivElement) => {
     const _classNames = this.opts.classNames;
     if (cloneNodes) {
-      this.$els.container = cloneNodes;
-      this.$els.children = (cloneNodes.getElementsByClassName(_classNames.children) as any) || createElementWidthClassName(_classNames["children"]);
-      this.$els.topicBox = (cloneNodes.getElementsByClassName(_classNames.topicBox) as any) || createElementWidthClassName(_classNames["topicBox"]);
-      this.$els.topic = (cloneNodes.getElementsByClassName(_classNames.topic) as any) || createElementWidthClassName(_classNames["topic"]);
+      this.$els = {
+        container: cloneNodes,
+        children: (cloneNodes.getElementsByClassName(_classNames.children) as any) || createElementWidthClassName(_classNames["children"]),
+        topicBox: (cloneNodes.getElementsByClassName(_classNames.topicBox) as any) || createElementWidthClassName(_classNames["topicBox"]),
+        topic: (cloneNodes.getElementsByClassName(_classNames.topic) as any) || createElementWidthClassName(_classNames["topic"])
+      };
     } else {
-      Object.keys(_classNames).map(el => {
-        this.$els[el] = createElementWidthClassName(_classNames[el]);
-      });
+      this.$els = {
+        container: createElementWidthClassName(_classNames.container),
+        children: createElementWidthClassName(_classNames.children),
+        topicBox: createElementWidthClassName(_classNames.topicBox),
+        topic: createElementWidthClassName(_classNames.topic)
+      };
       // bind custom style
       applyElementStyle(this.$els.topicBox, this.vt.options.style);
       this.$els.topic.innerText = this.vt.topic;
@@ -72,8 +77,11 @@ export class TopicView {
       // append to container
       this.$els.container.appendChild(this.$els.topicBox);
       this.$els.container.appendChild(this.$els.children);
+
+      this.$els.container.setAttribute("topic", this.vt.topic);
     }
     this.checkClassNames();
+    this.changeModeClassName();
     // set id attr
     this.$els.topicBox.id = this.vt.id;
   };
@@ -87,14 +95,13 @@ export class TopicView {
     if (this.vt.isRoot) {
       this.$els.topicBox.classList.add("root-topic");
     }
+    if (this.vt.children.length === 0) {
+      this.$els.children.style.display = "none";
+    }
   };
-  changeMode = (mode = this.vt.vm.options.mode) => {
-    const _container = this.$els.container;
-    let _className = _container.className;
-    TSMindSupportedModes.map(mode => {
-      _className = _className.replace(new RegExp(`\\bmode-${mode}\\b`, "g"), "");
-    });
-    _container.className = `${_className} mode-${mode}`;
+  changeModeClassName = () => {
+    if (!this.vt.isRoot)
+      this.$els.container.className = `${this.$els.container.className.replace(/mode-[^\W]/, "")} mode-${LayoutModeEnum[this.vt.direction]}`;
   };
   // mount child topic
   public mount = () => {
@@ -102,8 +109,9 @@ export class TopicView {
     const ptv = this.vt.parent;
     cvt.$beforeMount();
     this.setPosition();
-    if (!ptv) {
+    if (!ptv || ptv.isRoot) {
       // DOTO: mount to mind root node
+      this.vt.vm.view.addNode(cvt.view.$els.container);
     } else {
       const _index = cvt.index; // -1 , 0, ....
       // deal cloned vtopic
@@ -119,6 +127,7 @@ export class TopicView {
         const _brother = ptv.view.$els.children.childNodes[_index];
         ptv.view.$els.children.insertBefore(cvt.view.$els.container, _brother);
       }
+      ptv.view.$els.children.style.display = null;
     }
     cvt.$mounted();
     return true;

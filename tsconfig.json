@@ -1,30 +1,31 @@
 {
-	"compilerOptions": {
-		"baseUrl": ".",
-		// "outDir": "lib-es",
-		// "module": "commonjs",
-		// "target": "es5",
-		"lib": ["es6", "dom"],
-		"declaration": true,
-		"sourceMap": false,
-		"allowJs": false,
-		// "jsx": "react",
-		"moduleResolution": "node",
-		"rootDir": "src",
-		"forceConsistentCasingInFileNames": false,
-		"noImplicitReturns": true,
-		"noImplicitThis": true,
-		"noImplicitAny": true,
-		"importHelpers": true,
-		"strictNullChecks": true,
-		"suppressImplicitAnyIndexErrors": true,
-		"noUnusedLocals": true,
+  "compilerOptions": {
+    "baseUrl": ".",
+    // "outDir": "lib-es",
+    // "module": "commonjs",
+    // "target": "es5",
+    "lib": ["es6", "dom"],
+    "declaration": true,
+    "sourceMap": false,
+    "allowJs": false,
+    // "jsx": "react",
+    "moduleResolution": "node",
+    "rootDir": "src",
+    "forceConsistentCasingInFileNames": false,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "importHelpers": true,
+    "strictNullChecks": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "noUnusedLocals": true,
     "experimentalDecorators": true,
-		// "allowSyntheticDefaultImports": true,
-		"paths": {
-			"*": ["src/*"]
-		}
-	},
-	// "include": ["src/**/*", "src/global.d.ts"],
-	"exclude": ["tslib", "lib*"]
+    // "allowSyntheticDefaultImports": true,
+    "paths": {
+      "core/*": ["src/core/*"],
+      "utils/*": ["src/utils/*"]
+    }
+  },
+  // "include": ["src/**/*", "src/global.d.ts"],
+  "exclude": ["tslib", "lib*"]
 }

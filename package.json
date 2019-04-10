@@ -1,98 +1,100 @@
 {
-	"name": "ts-mind",
-	"version": "1.0.3",
-	"description": "A web-mind lib write in typescript.Sound apis and friendly plug-in mechanism in this lib.",
-	"main": "./lib-es/index.js",
-	"module": "./lib-es/index.js",
-	"jsnext:min": "./lib-es/index.js",
-	"typings": "./lib-es/index.d.ts",
-	"browser": "./lib-umd/ts-mind.js",
-	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"style": "lessc --compress ./src/style/* ./style/index.css",
-		"clean": "rimraf lib-*",
-		"build": "run-p clean style lib:es lib:umd lib:umd_min",
-		"dev": "rimraf lib-es && tsc --build tsconfig.dev.json -w",
-		"lib:es": "tsc --build tsconfig.es.json",
-		"lib:commonjs": "npx tsc --build tsconfig.commonjs.json",
-		"lib:umd": "webpack",
-		"lib:umd_min": "webpack --env.minimize"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/JasonDRZ/ts-mind.git"
-	},
-	"files": [
-		"*.md",
-		"lib-*",
-		"typings",
-		"style",
-		"src",
-		"index.js"
-	],
-	"keywords": [
-		"tsmind",
-		"mind-map",
-		"mind-mapping",
-		"canvas",
-		"javascript",
-		"jsmind",
-		"typescript"
-	],
-	"author": "JasonDRZ",
-	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/JasonDRZ/ts-mind/issues"
-	},
-	"homepage": "https://github.com/JasonDRZ/ts-mind#readme",
-	"devDependencies": {
-		"awesome-typescript-loader": "^5.2.1",
-		"commitizen": "^3.0.5",
-		"cross-env": "^5.2.0",
-		"less": "^3.9.0",
-		"npm-run-all": "^4.1.5",
-		"rimraf": "^2.6.3",
-		"tslib": "^1.9.3",
-		"tslint": "^5.14.0",
-		"typescript": "^3.3.3",
-		"validate-commit-msg": "^2.14.0",
-		"webpack": "^4.29.5",
-		"webpack-cli": "^3.2.3"
-	},
-	"dependencies": {},
-	"config": {
-		"commitizen": {
-			"path": "./node_modules/cz-conventional-changelog"
-		},
-		"validate-commit-msg": {
-			"types": [
-				"feat",
-				"fix",
-				"docs",
-				"style",
-				"refactor",
-				"perf",
-				"test",
-				"chore",
-				"revert",
-				"build"
-			],
-			"scope": {
-				"required": false,
-				"allowed": [
-					"component",
-					"action",
-					"reducer"
-				],
-				"validate": false,
-				"multiple": false
-			},
-			"warnOnFail": false,
-			"maxSubjectLength": 100,
-			"subjectPattern": ".+",
-			"subjectPatternErrorMsg": "subject does not match subject pattern!",
-			"helpMessage": "",
-			"autoFix": false
-		}
-	}
+  "name": "ts-mind",
+  "version": "1.0.3",
+  "description": "A web-mind lib write in typescript.Sound apis and friendly plug-in mechanism in this lib.",
+  "main": "./lib-es/index.js",
+  "module": "./lib-es/index.js",
+  "jsnext:min": "./lib-es/index.js",
+  "typings": "./lib-es/index.d.ts",
+  "browser": "./lib-umd/ts-mind.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "style": "lessc --compress ./src/style/* ./style/index.css",
+    "watch:style": "less-watch-compiler src/style style index.less",
+    "clean": "rimraf lib-*",
+    "build": "run-p clean style lib:es lib:umd lib:umd_min",
+    "dev": "rimraf lib-es && tsc --build tsconfig.dev.json -w",
+    "lib:es": "tsc --build tsconfig.es.json",
+    "lib:commonjs": "npx tsc --build tsconfig.commonjs.json",
+    "lib:umd": "webpack",
+    "lib:umd_min": "webpack --env.minimize"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JasonDRZ/ts-mind.git"
+  },
+  "files": [
+    "*.md",
+    "lib-*",
+    "typings",
+    "style",
+    "src",
+    "index.js"
+  ],
+  "keywords": [
+    "tsmind",
+    "mind-map",
+    "mind-mapping",
+    "canvas",
+    "javascript",
+    "jsmind",
+    "typescript"
+  ],
+  "author": "JasonDRZ",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JasonDRZ/ts-mind/issues"
+  },
+  "homepage": "https://github.com/JasonDRZ/ts-mind#readme",
+  "devDependencies": {
+    "awesome-typescript-loader": "^5.2.1",
+    "commitizen": "^3.0.5",
+    "cross-env": "^5.2.0",
+    "less": "^3.9.0",
+    "less-watch-compiler": "^1.13.0",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^2.6.3",
+    "tslib": "^1.9.3",
+    "tslint": "^5.14.0",
+    "typescript": "^3.3.3",
+    "validate-commit-msg": "^2.14.0",
+    "webpack": "^4.29.5",
+    "webpack-cli": "^3.2.3"
+  },
+  "dependencies": {},
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    },
+    "validate-commit-msg": {
+      "types": [
+        "feat",
+        "fix",
+        "docs",
+        "style",
+        "refactor",
+        "perf",
+        "test",
+        "chore",
+        "revert",
+        "build"
+      ],
+      "scope": {
+        "required": false,
+        "allowed": [
+          "component",
+          "action",
+          "reducer"
+        ],
+        "validate": false,
+        "multiple": false
+      },
+      "warnOnFail": false,
+      "maxSubjectLength": 100,
+      "subjectPattern": ".+",
+      "subjectPatternErrorMsg": "subject does not match subject pattern!",
+      "helpMessage": "",
+      "autoFix": false
+    }
+  }
 }
