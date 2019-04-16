@@ -1,17 +1,9 @@
-import { doc, addEvent } from "./dom";
-
-export function createDivElement() {
-  return doc.createElement("div");
+export function createElement<K extends keyof HTMLElementTagNameMap>(tagName: K, options?: ElementCreationOptions): HTMLElementTagNameMap[K] {
+  return document.createElement(tagName, options);
 }
 
-// add event width context
-export function addEcopedEvent(target: Element, ename: IMEventType, ehandler: IMAnyCall, ctx: object | null = null) {
-  addEvent(target, ename, function(e = event) {
-    ehandler.call(ctx, e);
-  });
-}
-export function createElementWidthClassName(className: string) {
-  const el = createDivElement();
+export function createElementWidthClassName<K extends keyof HTMLElementTagNameMap>(className: string, tagName: K): HTMLElementTagNameMap[K] {
+  const el = createElement(tagName);
   el.className = className;
   return el;
 }

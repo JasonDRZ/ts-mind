@@ -19,8 +19,20 @@ export function appendChild(parent: HTMLElement, child: any) {
   }
 }
 // add an element event listener
-export function addEvent(target: Document | Element, event: string, call: IMAnyCall, bunble: boolean = false) {
-  target.addEventListener(event, call, bunble);
+export function addEvent<Target extends Element | Window, K extends keyof GlobalEventHandlersEventMap>(
+  target: Target,
+  event: K,
+  listener: (this: GlobalEventHandlers, ev: GlobalEventHandlersEventMap[K]) => any,
+  options?: boolean | AddEventListenerOptions
+) {
+  target.addEventListener(event, listener, options);
+}
+export function removeEvent<Target extends Element, K extends keyof GlobalEventHandlersEventMap>(
+  target: Target,
+  event: K,
+  listener: (this: GlobalEventHandlers, ev: GlobalEventHandlersEventMap[K]) => any
+) {
+  target.removeEventListener(event, listener);
 }
 // get CSSStyleDeclaration property value
 export function getStyleValue(cstyle: CSSStyleDeclaration, property_name: string) {

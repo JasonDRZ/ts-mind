@@ -93,7 +93,7 @@ export function selectTopic(vm: Mind, topic: IMTopic) {
     return false;
   }
   vm.topicSelectedMap.set(topic.id, topic);
-  topic.toggleSelect(true);
+  topic.select(true);
   return true;
 }
 export function deselectTopic(vm: Mind, topic: IMTopic) {
@@ -103,6 +103,6 @@ export function deselectTopic(vm: Mind, topic: IMTopic) {
     return false;
   }
   vm.topicSelectedMap.delete(topic.id);
-  topic.toggleSelect(false);
+  topic.select(false);
   return true;
 }

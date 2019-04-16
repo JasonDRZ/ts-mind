@@ -1,8 +1,8 @@
 import { destroyObject, mergeObject } from "../../utils/tools";
 import { Mind } from "../Mind";
-import { IMTopicHooks, TopicProviderInstance, IMTopicOptionsDef } from "./defs";
+import { IMTopicHooks, IMTopicOptionsDef, TopicProvider } from "./defs";
 import { Topic } from ".";
-import { IMLayoutModeValue, LayoutModeEnum } from "../layouts";
+import { IMLayoutModeValue, LayoutModeEnum } from "../layout";
 import { IMTopicProps } from ".";
 
 export interface IMTopicData {
@@ -25,52 +25,50 @@ export class TopicLifecircle {
    * Topic attributes
    */
   // unique topic identifier
-  public id: string;
+  id: string;
   // current topic's data
   // weather the current topic is root topic
-  public isRoot: boolean;
+  isRoot: boolean;
   // weather this topic is a branch base topic
-  public isBranch: boolean;
+  isBranch: boolean;
   // weather this topic is a free topic,its location is based on root topic,and its location will not be updated automaticlly.
   // free topic has no parent topic,but root topic is stil.
-  public isFree: boolean;
+  isFree: boolean;
   // layout index, 0 is first index, Infinity index is the last child id.
-  public index: number;
+  index: number;
   // topic topic,could be any thing
-  public topic: IMTopicTopic;
+  topic: IMTopicTopic;
   /** got connection with parent nodes */
   // current topic's parent topic,root topic's parent topic is itself;
-  public parent?: Topic;
+  parent?: Topic;
   // connected with root topic,root topic's root topic is itself;
-  public root: Topic;
+  root: Topic;
   // connected with main branch topic,branch's branchId is self id, root has no branchId.
-  public branch?: Topic;
+  branch?: Topic;
   /**
    * can be extended attributes
    */
   // current topic's direction
-  public direction: IMLayoutModeValue;
+  direction: IMLayoutModeValue;
   // current topic's children nodes
-  public children: Topic[] = [];
-  // topic  options, index of configuration.
-  public options: IMTopicOptionsDef;
+  children: Topic[] = [];
   /** attributes end */
 
-  public vm: Mind;
   // is cloned node tag
-  public isClone: boolean = false;
+  isClone: boolean = false;
   // state flags
-  public _mounted: boolean = false;
-  public _destroyed: boolean = false;
+  _mounted: boolean = false;
+  _destroyed: boolean = false;
   // extra state
-  public selected: boolean = false;
-  public expanded: boolean = true;
+  selected: boolean = false;
+  expanded: boolean = true;
+  focused: boolean = false;
 
-  public providers: TopicProviderInstance[] = [];
+  providers: TopicProvider[] = [];
   // topic private data;
-  public data = {
+  data = {
     // for view data store
-    view: {
+    layout: {
       position: {
         x: 0,
         y: 0
@@ -81,7 +79,7 @@ export class TopicLifecircle {
       // [typeid]: providerData
     }
   };
-  constructor(vm: Mind, source: IMTopicProps, options: IMTopicOptionsDef) {
+  constructor(public vm: Mind, source: IMTopicProps, public options: IMTopicOptionsDef) {
     const {
       // required fields
       id,
@@ -119,12 +117,12 @@ export class TopicLifecircle {
     this.$beforeCreate();
   }
 
-  public readonly __callHook = (name: keyof IMTopicHooks, ...args: any[]) => {
+  readonly __callHook = (name: keyof IMTopicHooks, ...args: any[]) => {
     return this.vm.options.capturedError(this.vm.options.debug, () => this.options[name].apply(this, [this, ...args]));
   };
   // private setDataHook(source: IMTopicProps) {}
   // life hooks
-  public readonly $destroy = () => {
+  readonly $destroy = () => {
     if (this._destroyed) return;
     this.__callHook("beforeDestroy");
     destroyObject(this);
@@ -132,41 +130,35 @@ export class TopicLifecircle {
     this._destroyed = true;
     this.__callHook("destroyed");
   };
-  public readonly $beforeUpdate = () => {
+  readonly $beforeUpdate = () => {
     this.__callHook("beforeUpdate");
   };
-  public readonly $updated = () => {
+  readonly $updated = () => {
     this.__callHook("updated");
   };
-  public readonly $beforeCreate = () => {
+  readonly $beforeCreate = () => {
     this.__callHook("beforeCreate");
   };
-  public readonly $created = () => {
+  readonly $created = () => {
     this.__callHook("created");
   };
-  public readonly $shouldMount = () => {
-    return this.__callHook("shouldMount");
-  };
-  public readonly $mounted = () => {
+  readonly $mounted = () => {
     this._mounted = true;
     this.__callHook("mounted");
   };
-  public readonly $beforeMount = () => {
+  readonly $beforeMount = () => {
     this.__callHook("beforeMount");
   };
-  public readonly $unmounted = () => {
+  readonly $unmounted = () => {
     this._mounted = false;
     this.__callHook("unmounted");
   };
 
-  public readonly $shouldUpdate = () => {
-    return this.__callHook("shouldUpdate");
-  };
   // can expand all child and itself
-  public readonly $expandChange = () => {
+  readonly $expandChange = () => {
     this.__callHook("expand", this.expanded);
   };
-  public readonly $selectChange = () => {
+  readonly $selectChange = () => {
     this.__callHook("select", this.selected);
   };
 }

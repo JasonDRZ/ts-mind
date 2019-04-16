@@ -50,7 +50,7 @@ export function modifyTopic(vt: Topic, topic: string): boolean {
   return true;
 }
 
-export function changeParent(vt: Topic, parent: Topic | Mind, index: number): boolean {
+export function changeParent(vt: Topic, parent: Topic | Mind = vt.vm, index: number): boolean {
   if (parent instanceof Mind) {
     vt.parent = undefined;
     vt.branch = vt;
@@ -58,13 +58,13 @@ export function changeParent(vt: Topic, parent: Topic | Mind, index: number): bo
     vt.isBranch = false;
     vt.isClone = false;
     // TODO: 待完成mind中插入自由主题功能
-    return parent.appendTopic(vt);
+    return parent.freeTopic(vt);
   }
   const op = queryTopic(vt.vm, vt.parent) as Topic;
   if (op.id === parent.id) return false;
   op.removeChildById(vt.id);
   vt.parent = parent;
-  vt.branch = parent.branch;
+  vt.branch = parent.isRoot ? vt : parent.branch;
   // change index
   vt.index = index;
   return !!parent.addChild(vt);
@@ -137,13 +137,13 @@ export function addChild(vt: Topic, cvt: Topic) {
   } else {
     vt.children.splice(cvt.index, 0, cvt);
   }
-  cvt.view.mount();
   // update children index, after pushed or inserted.
   reindexChildren(vt);
   // reset some attrs
   cvt.isClone = false;
   cvt.isFree = false;
   cvt.isRoot = false;
+  cvt.view.mount();
   vt.$updated();
   return vt;
 }

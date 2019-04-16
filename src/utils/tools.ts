@@ -1,5 +1,5 @@
-import { Topic } from "../core/Topic";
-import { Mind } from "../core/Mind";
+// import { Topic } from "../core/Topic";
+// import { Mind } from "../core/Mind";
 
 export const _slice = Array.prototype.slice;
 
@@ -44,6 +44,15 @@ export function str(str: string, beg: string) {
       return str.slice(str.length - beg.length, str.length) === beg;
     }
   };
+}
+
+// Object keys maping
+export function objKeys(obj: object, cb?: IMAnyCall<[string, number, string[]]>) {
+  return Object.keys(obj).map((key, idx, keyArr) => (cb ? cb(key, idx, keyArr) : key));
+}
+export function objValues<Item = any>(obj: object, cb?: IMAnyCall<[Item, number, string, Item[]]>) {
+  let values: any[];
+  return Object.keys(obj).map((key, idx, keyArr) => (cb ? cb(obj[key], idx, key, values ? values : (values = keyArr.map(_k => obj[_k]))) : obj[key]));
 }
 
 // To determine whether a target is a Function.
@@ -215,7 +224,7 @@ export function isEmptyStr(s: any) {
 // destroy an class instance object
 export function destroyObject(obj: { _destroyed: boolean; [k: string]: any }) {
   // delete all own properties
-  Object.keys(obj).map(key => {
+  objKeys(obj, key => {
     delete obj[key];
   });
   // destroy the prototype chain
@@ -277,9 +286,13 @@ export function randomId() {
   ).substr(2, 16);
 }
 
-export function initAnyProviders<Provider extends IMProviderCustom<any, any>>(ctx: Topic | Mind, providers: IMKeyValue<Provider>, store: IMKeyValue) {
+export function initAnyProviders<CTX extends { providers: Array<any> }, Provider extends { data?: object | (() => object) }>(
+  ctx: CTX,
+  providers: IMKeyValue<IMProviderCustom<CTX, Provider>>,
+  store: IMKeyValue
+) {
   // provider data bank
-  Object.keys(providers).map(_tid => {
+  objKeys(providers, _tid => {
     const provider = providers[_tid];
     // data must be an object
     const _provider = new provider(ctx as any);
@@ -307,8 +320,8 @@ export function initAnyProviders<Provider extends IMProviderCustom<any, any>>(ct
   });
 }
 
-export function precision(num: number) {
-  return +num.toFixed(2);
+export function precision(num: number, fixed: number = 2) {
+  return +num.toFixed(fixed);
 }
 
 export function whileMap<RItem = any, Item = any>(arr: Item[], cb: (item: Item, idx: number, arr: Item[]) => RItem) {
@@ -316,16 +329,25 @@ export function whileMap<RItem = any, Item = any>(arr: Item[], cb: (item: Item, 
   whileFor(arr, (...arg) => {
     ret.push(cb(...arg));
   });
+  arr = null as any;
+  cb = null as any;
   return ret;
 }
 
 export function whileFor<Item = any>(arr: Item[], cb: (item: Item, idx: number, arr: Item[]) => void): void {
   if (arr.length === 0) return;
-  const _slen = arr.length - 1;
+  let _slen = arr.length - 1;
   let _len = _slen;
+  let idx;
   while (_len >= 0) {
-    const idx = _slen - _len;
+    idx = _slen - _len;
     cb(arr[idx], idx, arr);
     _len--;
   }
+  // 清理缓存
+  _len = null as any;
+  _slen = null as any;
+  arr = null as any;
+  cb = null as any;
+  idx = null as any;
 }

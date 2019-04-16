@@ -15,7 +15,7 @@ import {
   initProviders,
   setAttribute
 } from "./methods";
-import { IMLayoutMode, IMLayoutModeValue } from "../layouts";
+import { IMLayoutMode, IMLayoutModeValue } from "../layout";
 
 export * from "./defs";
 export * from "./methods";
@@ -54,9 +54,9 @@ export type IMMindData<EX = {}> = Map<string, IMTopicExportData & EX>;
 
 export class Topic extends TopicLifecircle {
   // view layer
-  public view: TopicView;
+  view: TopicView;
   // layout layer
-  public layout: TopicView;
+  layout: TopicView;
 
   constructor(vm: Mind, topicSource: IMTopicProps, options: IMTopicOptionsDef) {
     super(vm, topicSource, options);
@@ -71,33 +71,33 @@ export class Topic extends TopicLifecircle {
     this.view = new TopicView(this);
   }
 
-  public attr = (attr: IMChangeTopicAttrKey, value: any) => {
+  attr = (attr: IMChangeTopicAttrKey, value: any) => {
     setAttribute(this, attr, value);
   };
 
-  public initProviders = () => {
+  initProviders = () => {
     initProviders(this);
   };
   /**
    * Data operation methods
    */
   // this action may cost big amount computing resource,when target topic has many children topics.
-  public clone = (): Topic => {
+  clone = (): Topic => {
     return vtClone(this);
   };
   // get topic data,in order to export data file
-  public getData = () => {
+  getData = () => {
     return getTopicData(this);
   };
   // vt configuration extends
-  public extends = (tarVt: Topic): Topic => {
+  extends = (tarVt: Topic): Topic => {
     return vtExtend(this, tarVt);
   };
   // modify this topic content
-  public modifyTopic = (topic: string) => {
+  modifyTopic = (topic: string) => {
     return modifyTopic(this, topic);
   };
-  public changeMode = (mode: IMLayoutMode) => {
+  changeMode = (mode: IMLayoutMode) => {
     this.view;
   };
 
@@ -105,55 +105,80 @@ export class Topic extends TopicLifecircle {
    * VComp operation methods
    */
   // remove self,and destroy self
-  public remove = () => {
+  remove = () => {
     return selfRemove(this);
   };
   // add new child topic
-  public addChild = (topic: Topic) => {
+  addChild = (topic: Topic) => {
     return addChild(this, topic);
   };
-  public hasChild = (vt: IMTopic) => {
+  hasChild = (vt: IMTopic) => {
     const _c = queryTopic(this.vm, vt);
     return !_c ? false : branch(this).hasChild(_c);
   };
-  public findChildById = (id: string) => {
+  findChildById = (id: string) => {
     return branch(this).findChild(id);
   };
   // remove some child topic
-  public removeChildById = (id: string) => {
+  removeChildById = (id: string) => {
     return removeChildById(this, id);
   };
   // find a child by id
-  public getChildById = (id: string) => {
+  getChildById = (id: string) => {
     return this.children.find(child => child.id === id);
   };
   // get child index by id
-  public getChildIndexById = (id: string) => {
+  getChildIndexById = (id: string) => {
     return this.children.findIndex(child => child.id === id);
   };
-  public toggleSelect = (select: boolean = !this.selected) => {
+
+  select = (select: boolean = !this.selected, selectChildren: boolean = false) => {
     this.selected = select;
+    // internal expand children nodes
+    if (selectChildren && this.children.length > 0) {
+      this.children.map(child => child.select(select, selectChildren));
+    }
+    this.view.select();
+    const selectedMap = this.vm.topicSelectedMap;
+    if (select) {
+      selectedMap.set(this.id, this);
+      this.focus(true);
+    } else {
+      selectedMap.delete(this.id);
+      this.focus(true);
+    }
     this.$selectChange();
     return select;
   };
+  focus = (yes: boolean = true) => {
+    if (this.focused === yes) return;
+    // 修改状态
+    this.focused = yes;
+    if (yes) {
+      this.vm.topicCurrentFocus && this.vm.topicCurrentFocus.focus(false);
+      this.vm.topicCurrentFocus = this;
+    } else this.vm.topicCurrentFocus = undefined;
+    this.view.focus();
+  };
   // can expand all child and itself
-  public toggleExpand = (toggleAll: boolean = false, expand = !this.expanded) => {
+  expand = (expand = !this.expanded, expandChildren: boolean = false) => {
     this.expanded = expand;
     // internal expand children nodes
-    if (toggleAll && this.children.length > 0) {
-      this.children.map(child => child.toggleExpand(toggleAll, expand));
+    if (expandChildren && this.children.length > 0) {
+      this.children.map(child => child.expand(expandChildren, expand));
     }
+    this.view.expand();
     this.$expandChange();
-    return expand;
+    this.vm.layout.layout();
   };
-  public changeParent = (pv: Topic | Mind, index: number = -1) => {
+  changeParent = (pv: Topic | Mind, index: number = -1) => {
     return changeParent(this, pv, index);
   };
   // quick methods
   // 向前插入兄弟节点
-  public insertBefore() {}
+  insertBefore() {}
   // 向后插入兄弟街节点
-  public insertAfter() {}
+  insertAfter() {}
   // 向前插入父节点
-  public insertForward() {}
+  insertForward() {}
 }

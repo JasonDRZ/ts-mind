@@ -1,42 +1,21 @@
 import { Topic } from ".";
-export declare class TopicProviderInstance {
-  data?: object | (() => object);
-  mounted(): void;
-  updated(): void;
-  destroyed(): void;
-  selected(): void;
-  expanded(): void;
-  [k: string]: any;
+export type IMTopicProvider = IMProviderCustom<Topic, TopicProvider>;
+export abstract class TopicProvider {
+  data: object | (() => object) = {};
+  constructor(vt: Topic) {}
+  mounted() {}
+  unmounted() {}
+  beforeUpdate() {}
+  updated() {}
+  destroyed() {}
 }
-export type IMTopicProvider = IMProviderCustom<Topic, TopicProviderInstance>;
-
 export interface IMTopicOptions extends IMTopicHooks {
   // common options
-  classNames?: {
-    container?: string;
-    topicBox?: string;
-    topic?: string;
-    children?: string;
-  };
   providers?: IMTopicProvider[];
-  style?: IMCSSStyleMap;
 }
 
 export interface IMTopicOptionsDef extends IMTopicHooksDef {
-  // private options
-  position: {
-    x: number;
-    y: number;
-  };
-  // common options
-  classNames: {
-    container: string;
-    topicBox: string;
-    topic: string;
-    children: string;
-  };
   providers: IMKeyValue<IMTopicProvider>;
-  style: IMCSSStyleMap;
 }
 
 export interface IMTopicHooksDef {
@@ -51,8 +30,6 @@ export interface IMTopicHooksDef {
   destroyed(this: Topic, VT: Topic): void;
   select(this: Topic, VT: Topic, select: boolean): void;
   expand(this: Topic, VT: Topic, expand: boolean): void;
-  shouldMount(this: Topic, VT: Topic): boolean;
-  shouldUpdate(this: Topic, VT: Topic): boolean;
 }
 
 export interface IMTopicHooks {
@@ -67,6 +44,4 @@ export interface IMTopicHooks {
   destroyed?(this: Topic, VT: Topic): void;
   select?(this: Topic, VT: Topic, select: boolean): void;
   expand?(this: Topic, VT: Topic, expand: boolean): void;
-  shouldMount?(this: Topic, VT: Topic): boolean;
-  shouldUpdate?(this: Topic, VT: Topic): boolean;
 }
