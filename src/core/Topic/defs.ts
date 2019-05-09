@@ -1,4 +1,4 @@
-import { Topic } from ".";
+import { Topic } from "./vt";
 export type IMTopicProvider = IMProviderCustom<Topic, TopicProvider>;
 export abstract class TopicProvider {
   data: object | (() => object) = {};
@@ -7,7 +7,7 @@ export abstract class TopicProvider {
   unmounted() {}
   beforeUpdate() {}
   updated() {}
-  destroyed() {}
+  beforeDestroy() {}
 }
 export interface IMTopicOptions extends IMTopicHooks {
   // common options

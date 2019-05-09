@@ -8,12 +8,20 @@ type IMKeyValue<V = any> = { [k: string]: V };
 type IMCSSStyleMap = IMKeyValue;
 
 interface IMPosition {
-  x: number;
-  y: number;
+  top: number;
+  left: number;
 }
 interface IMPositionDefect {
-  x?: number;
-  y?: number;
+  top?: number;
+  left?: number;
+}
+interface IMSize {
+  width: number;
+  height: number;
+}
+interface IMSizeDefect {
+  width?: number;
+  height?: number;
 }
 
 /**

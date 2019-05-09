@@ -1,6 +1,6 @@
-import { IMTopicProps, IMTopic, Topic } from "../Topic";
+import { IMTopicProps, IMTopic, Topic } from "../../Topic/vt";
 import { Mind } from ".";
-import { initAnyProviders } from "../../utils/tools";
+import { initAnyProviders } from "../../../utils/tools";
 
 export function initProviders(vm: Mind) {
   initAnyProviders(vm, vm.options.providers, vm.data.providers);

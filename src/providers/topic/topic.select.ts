@@ -1,4 +1,4 @@
-import { TopicProvider, Topic } from "../../core/Topic";
+import { TopicProvider, Topic } from "../../core/Topic/vt";
 
 export class TopicSelect extends TopicProvider {
   constructor(vt: Topic) {

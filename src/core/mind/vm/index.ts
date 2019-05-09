@@ -1,11 +1,11 @@
-import { Topic, IMTopicProps, IMTopic } from "../Topic";
-import { IMMindEntryOptions } from "./defs";
-import { addTopic, moveTopicTo, removeTopic, selectTopic, deselectTopic, collectTopic, initProviders } from "./mind";
-import { MindView } from "./view";
+import { Topic, IMTopicProps, IMTopic } from "../../Topic/vt";
+import { IMMindEntryOptions } from "../defs";
+import { addTopic, moveTopicTo, removeTopic, selectTopic, deselectTopic, collectTopic, initProviders } from "./_methods";
+import { MindView } from "../view";
 import { MindLifecircle } from "./lifecircle";
-import { whileFor } from "../../utils/tools";
-import { Layout } from "../layout";
-export * from "./mind";
+import { whileFor } from "../../../utils/tools";
+import { Layout } from "../../layout";
+export * from "./_methods";
 
 export class Mind extends MindLifecircle {
   // static APIs
@@ -35,12 +35,7 @@ export class Mind extends MindLifecircle {
     whileFor(data, (item, idx) => {
       this.addTopic(item);
     });
-    this.rootTopic.view.mount();
-    setTimeout(() => {
-      this.layout.centerCanvas();
-      this.layout.centerRoot();
-      this.layout.layout(true);
-    }, 0);
+    this.rootTopic.view.mount().then(() => { console.warn("Root Mounted!!!!!!"); this.layout.layout(true) });
   }
 
   collectTopic(vt: Topic) {

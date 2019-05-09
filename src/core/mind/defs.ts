@@ -1,5 +1,5 @@
-import { Mind } from ".";
-import { IMTopicProvider, IMTopicOptions, IMTopicOptionsDef } from "../Topic";
+import { Mind } from "./vm";
+import { IMTopicProvider, IMTopicOptions, IMTopicOptionsDef } from "../Topic/vt";
 import { IMLayoutMode } from "../layout";
 export type IMMindProvider = IMProviderCustom<Mind, MindProvider>;
 
@@ -10,9 +10,9 @@ export class MindProvider {
     this.vm = vm;
   }
   // provider将会在Mind created 之后beforeMount之前初始化
-  beforeMount() {}
-  mounted() {}
-  destroyed() {}
+  beforeMount() { }
+  mounted() { }
+  destroyed() { }
 }
 
 export interface IMMindHooks {

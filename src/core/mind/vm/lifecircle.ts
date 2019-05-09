@@ -1,9 +1,11 @@
-import { destroyObject, extend, Logger } from "../../utils/tools";
-import { IMMindEntryOptionsDef, IMMindHooksDef, IMMindEntryOptions, MindProvider } from "./defs";
-import { DEFAULT_OPTIONS } from "../../utils/constants";
-import { Topic } from "../Topic";
+import { destroyObject, extend, Logger } from "../../../utils/tools";
+import { IMMindEntryOptionsDef, IMMindHooksDef, IMMindEntryOptions, MindProvider } from "../defs";
+import { DEFAULT_OPTIONS } from "../../../utils/constants";
+import { Topic } from "../../Topic/vt";
+import { EventManager } from '../../Event';
+import { Mind } from '.';
 
-export class MindLifecircle {
+export class MindLifecircle extends EventManager<Mind> {
   // mind meta
   meta: IMSourceMeta;
   // mind options
@@ -28,6 +30,7 @@ export class MindLifecircle {
   topicCollectedMap: Map<string, Topic> = new Map();
 
   constructor(options: IMMindEntryOptions) {
+    super();
     this.options = extend(true, DEFAULT_OPTIONS, options);
     this.logger = new Logger(this.options.debug);
   }

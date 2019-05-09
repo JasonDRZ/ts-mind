@@ -3,7 +3,7 @@
 
 export const _slice = Array.prototype.slice;
 
-export const _noop = function(...arg: any[]): any {};
+export const _noop = function (...arg: any[]): any { };
 
 function _loggerHandler(method: string) {
   return (action: string, msg: string, ...oth: any[]) => console[method].apply(null, `[ACTION: ${action}]`, msg, ...oth);
@@ -50,9 +50,9 @@ export function str(str: string, beg: string) {
 export function objKeys(obj: object, cb?: IMAnyCall<[string, number, string[]]>) {
   return Object.keys(obj).map((key, idx, keyArr) => (cb ? cb(key, idx, keyArr) : key));
 }
-export function objValues<Item = any>(obj: object, cb?: IMAnyCall<[Item, number, string, Item[]]>) {
+export function objValues<Item = any>(obj: object, cb?: IMAnyCall<[Item, string, number, Item[]]>) {
   let values: any[];
-  return Object.keys(obj).map((key, idx, keyArr) => (cb ? cb(obj[key], idx, key, values ? values : (values = keyArr.map(_k => obj[_k]))) : obj[key]));
+  return Object.keys(obj).map((key, idx, keyArr) => (cb ? cb(obj[key], key, idx, values ? values : (values = keyArr.map(_k => obj[_k]))) : obj[key]));
 }
 
 // To determine whether a target is a Function.
@@ -222,7 +222,7 @@ export function isEmptyStr(s: any) {
 }
 
 // destroy an class instance object
-export function destroyObject(obj: { _destroyed: boolean; [k: string]: any }) {
+export function destroyObject(obj: { _destroyed: boolean;[k: string]: any }) {
   // delete all own properties
   objKeys(obj, key => {
     delete obj[key];
@@ -274,7 +274,7 @@ export function mergeObject<A = object>(target: A, ...args: A[]) {
     Object.assign(target, diff);
     return diff;
   }
-  return null;
+  return undefined;
 }
 
 export function randomId() {

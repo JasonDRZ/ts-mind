@@ -1,9 +1,12 @@
-import { destroyObject, mergeObject } from "../../utils/tools";
-import { Mind } from "../Mind";
-import { IMTopicHooks, IMTopicOptionsDef, TopicProvider } from "./defs";
+import { destroyObject, mergeObject } from "../../../utils/tools";
+import { Mind } from "../../Mind/vm";
+import { IMTopicHooks, IMTopicOptionsDef, TopicProvider } from "../defs";
 import { Topic } from ".";
-import { IMLayoutModeValue, LayoutModeEnum } from "../layout";
+import { IMLayoutModeValue, LayoutModeEnum } from "../../layout";
 import { IMTopicProps } from ".";
+import { EventManager } from '../../Event';
+import { observeWidthDefaultValueMap } from '../../../utils/observe';
+import { onAttributeUpdated } from './_methods';
 
 export interface IMTopicData {
   // for view data store
@@ -18,9 +21,7 @@ export interface IMTopicData {
   };
 }
 
-export type IMChangeTopicAttrKey = "isRoot" | "root" | "isBranch" | "isFree" | "index" | "topic" | "parent" | "branch" | "direction";
-
-export class TopicLifecircle {
+export abstract class TopicLifecircle extends EventManager<Topic> {
   /**
    * Topic attributes
    */
@@ -50,9 +51,9 @@ export class TopicLifecircle {
    */
   // current topic's direction
   direction: IMLayoutModeValue;
+  /** attributes end */
   // current topic's children nodes
   children: Topic[] = [];
-  /** attributes end */
 
   // is cloned node tag
   isClone: boolean = false;
@@ -70,9 +71,9 @@ export class TopicLifecircle {
     // for view data store
     layout: {
       position: {
-        x: 0,
-        y: 0
-      }
+        top: 0,
+        left: 0
+      } as IMPosition
     },
     // for every provider's data
     providers: {
@@ -80,6 +81,7 @@ export class TopicLifecircle {
     }
   };
   constructor(public vm: Mind, source: IMTopicProps, public options: IMTopicOptionsDef) {
+    super();
     const {
       // required fields
       id,
@@ -97,17 +99,18 @@ export class TopicLifecircle {
       throw Error(`The params (id,topic) are all required,when create an Topic!In order to reduce the loss of Topic-searching performance.`);
     }
     const parent = vm.getTopicById(parentId as string);
-    // console.info(parent);
-    // config
-    this.id = id;
-    this.topic = topic;
-    this.index = index;
-    this.direction = direction;
-    this.isRoot = isRoot;
-    this.isFree = isFree;
-    this.isBranch = (parent && parent.isRoot) || false;
-    this.parent = parent;
-    this.expanded = expanded;
+    // set observered attribules;
+    observeWidthDefaultValueMap(this as any, {
+      id: id,
+      topic: topic,
+      index: index,
+      direction: direction,
+      isRoot: isRoot,
+      isFree: isFree,
+      isBranch: (parent && parent.isRoot) || false,
+      parent: parent,
+      expanded: expanded
+    }, onAttributeUpdated)
 
     this.vm = vm;
     this.options = options;
@@ -128,7 +131,6 @@ export class TopicLifecircle {
     destroyObject(this);
     // set destroyed flag
     this._destroyed = true;
-    this.__callHook("destroyed");
   };
   readonly $beforeUpdate = () => {
     this.__callHook("beforeUpdate");

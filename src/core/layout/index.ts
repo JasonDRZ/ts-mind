@@ -1,10 +1,11 @@
-import { Topic } from "../Topic";
-import { whileFor } from "../../utils/tools";
-import { Mind } from "../Mind";
+import { Topic } from "../Topic/vt";
+// import { whileFor } from "../../utils/tools";
+import { Mind } from "../Mind/vm";
 import { LeftMode } from "./LeftMode";
 import { RightMode } from "./RightMode";
 import { SidesMode } from "./SidesMode";
-import { centerCanvas, centerRoot } from "../../utils/layout";
+import { fastDom } from "../../utils/view";
+import { centerCanvas } from "../../utils/layout";
 
 export interface IMLayoutMindBorder {
   leftTop: [number, number];
@@ -56,11 +57,13 @@ export enum LayoutModeEnum {
  */
 export interface IMLayoutApi {
   mode: string;
+  centerCanvas?(vm: Mind): void;
   direction(topic: Topic): void;
-  layout(vm: Mind, force: boolean): IMLayoutMindBorder;
+  position(vm: Mind): IMLayoutMindBorder;
+  layout(vm: Mind, force?: boolean): IMLayoutMindBorder;
 }
 export interface IMLayoutConstructor {
-  new (): IMLayoutApi;
+  new(): IMLayoutApi;
 }
 
 const DefaultLayoutMode = new RightMode();
@@ -78,13 +81,9 @@ export class Layout {
     this.vm = vm;
     this.mode = LayoutModeEnum[vm.options.mode];
   }
-  private _changeAllTopicDirection(topic: Topic = this.vm.rootTopic) {
-    topic.direction = LayoutModeEnum.center;
-    this.computeTopicDirection(topic);
-    whileFor(topic.children, _topic => this._changeAllTopicDirection(_topic));
-  }
   // 获取当前模式下的布局方案
   getModeLayout = (mode: IMLayoutModeValue = this.mode): IMLayoutApi => {
+    console.info(mode)
     return LayoutModeMap.get(LayoutModeEnum[mode]) || DefaultLayoutMode;
   };
   /**
@@ -95,24 +94,26 @@ export class Layout {
     this.mode = LayoutModeEnum[newMode];
     this.layout(true);
   };
-  // 画布窗口居中
   centerCanvas = () => {
-    centerCanvas(this.vm);
-  };
-  // 根节点画布居中
-  centerRoot = () => {
-    centerRoot(this.vm);
+    // 可被覆盖
+    (this.getModeLayout().centerCanvas || centerCanvas)(this.vm);
   };
   // 布局主函数
   layout = (force: boolean = false) => {
-    console.info("LAYOUT");
-    if (force) this._changeAllTopicDirection();
-    this.viewBorder = this.getModeLayout().layout(this.vm, force);
-    this.updateCanvasSize({
-      width: this.viewBorder.leftTop[0] - this.viewBorder.rightBottom[0],
-      height: this.viewBorder.leftTop[1] - this.viewBorder.rightBottom[1]
+    return fastDom.mutate(() => {
+      console.info("LAYOUT");
+      // if (force) this._changeAllTopicDirection();
+      this.viewBorder = this.getModeLayout().layout(this.vm, force);
+      // 当canvas的size更新后，需要重新进行布局
+      this.updateCanvasSize({
+        width: this.viewBorder.leftTop[0] - this.viewBorder.rightBottom[0],
+        height: this.viewBorder.leftTop[1] - this.viewBorder.rightBottom[1]
+      }).then((update) => {
+        console.info(update)
+        this.layout(force);
+      });
+      return this.viewBorder;
     });
-    return this.viewBorder;
   };
   // computing topic's view direction width current layout mode.
   computeTopicDirection = (topic: Topic) => {
@@ -121,29 +122,12 @@ export class Layout {
   // 更新画布大小
   updateCanvasSize = (size: { width: number; height: number }): Promise<any> => {
     const mindView = this.vm.view;
-    const { w, h } = mindView.getCanvasSize();
-    const { clientWidth, clientHeight } = mindView.$els.stage;
-    const view = {
-      width: Math.max(size.width, clientWidth),
-      height: Math.max(size.height, clientHeight)
-    };
-    const newSize = {
-      w,
-      h
-    };
-    let shouldUpdate = false;
-    if (view.width > w / CANVAS_SIZE) {
-      newSize.w = view.width * CANVAS_SIZE;
-      shouldUpdate = true;
-    }
-    if (view.height > h / CANVAS_SIZE) {
-      newSize.h = view.height * CANVAS_SIZE;
-      shouldUpdate = true;
-    }
-    if (shouldUpdate) {
-      mindView.setCanvasSize(newSize);
-      return Promise.resolve();
-    }
-    return Promise.reject();
+    const { width: lastWidth, height: lastHeight } = mindView.getEleRect();
+    const { width: stageWidth, height: stageHeight } = mindView.getEleRect("stage");
+    console.info(lastWidth, lastHeight)
+    return mindView.setCanvasSize({
+      width: Math.max(Math.max(size.width, stageWidth), lastWidth / CANVAS_SIZE) * CANVAS_SIZE,
+      height: Math.max(Math.max(size.height, stageHeight), lastHeight / CANVAS_SIZE) * CANVAS_SIZE
+    });
   };
 }

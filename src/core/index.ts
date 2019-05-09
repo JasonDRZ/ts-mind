@@ -1,4 +1,4 @@
-import { Mind } from "./Mind";
+import { Mind } from "./Mind/vm";
 
 export const TSMind = Mind;
 

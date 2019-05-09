@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no,, maximum-scale=1, user-scalable=no" />
+    <meta name="theme-color" content="#000000" />
+    <title>React App</title>
+    <link rel="stylesheet" href="../style/index.css" />
+  </head>
+  <body>
+    <noscript> You need to enable JavaScript to run this app. </noscript>
+    <div id="root" style="height: 100vh;width: 100vw;"></div>
+    <script src="../lib-umd/ts-mind.js"></script>
+    <script>
+      (function(source) {
+        window.tsm = new TSMind.default({
+          container: document.getElementById("root"),
+          editable: true
+        });
+        tsm.load(source.data);
+      })({
+        meta: {
+          name: "jsMind remote",
+          author: "hizzgdev@163.com",
+          version: "0.2"
+        },
+        format: "node_array",
+        data: [
+          {
+            id: "rootid",
+            topic: "jsMind",
+            expanded: true,
+            isRoot: true
+          },
+          {
+            id: "easy",
+            topic: "Easy",
+            expanded: false,
+            parentId: "rootid",
+            direction: 1
+          },
+          {
+            id: "easy1",
+            topic: "Easy to show",
+            expanded: true,
+            parentId: "easy"
+          },
+          {
+            id: "easy1-1",
+            topic: "Easy to show mimi",
+            expanded: true,
+            parentId: "easy1"
+          },
+          {
+            id: "easy1-2",
+            topic: "Easy to show fuck",
+            expanded: true,
+            parentId: "easy1"
+          },
+          {
+            id: "easy2",
+            topic: "Easy to edit",
+            expanded: true,
+            parentId: "easy"
+          },
+          {
+            id: "easy3",
+            topic: "Easy to store",
+            expanded: true,
+            parentId: "easy"
+          },
+          {
+            id: "easy4",
+            topic: "Easy to embed",
+            expanded: true,
+            parentId: "easy"
+          },
+          {
+            id: "other3",
+            expanded: true,
+            parentId: "easy",
+            backgroundImage: "ant.png",
+            width: "100",
+            height: "100"
+          },
+          {
+            id: "open",
+            topic: "Open Source",
+            expanded: true,
+            parentId: "rootid",
+            direction: 1
+          },
+          {
+            id: "open1",
+            topic: "on GitHub",
+            expanded: true,
+            parentId: "open",
+            "background-color": "#eee",
+            "foreground-color": "blue"
+          },
+          {
+            id: "open2",
+            topic: "BSD License",
+            expanded: true,
+            parentId: "open"
+          },
+          {
+            id: "powerful",
+            topic: "Powerful",
+            expanded: true,
+            parentId: "rootid",
+            direction: 1
+          },
+          {
+            id: "powerful1",
+            topic: "Base on Javascript",
+            expanded: true,
+            parentId: "powerful"
+          },
+          {
+            id: "powerful2",
+            topic: "Base on HTML5",
+            expanded: true,
+            parentId: "powerful"
+          },
+          {
+            id: "powerful3",
+            topic: "Depends on you",
+            expanded: true,
+            parentId: "powerful"
+          },
+          {
+            id: "other",
+            topic: "test node",
+            expanded: true,
+            parentId: "rootid",
+            direction: 1
+          },
+          {
+            id: "other1",
+            topic: "I'm from local variable",
+            expanded: true,
+            parentId: "other"
+          },
+          {
+            id: "other2",
+            topic: "I can do everything",
+            expanded: true,
+            parentId: "other"
+          },
+          {
+            id: "free",
+            isFree: true,
+            topic: "Frees",
+            expanded: true,
+            parentId: "root"
+          },
+          {
+            id: "free1",
+            topic: "I'm a Free Topic",
+            expanded: true,
+            parentId: "free"
+          }
+        ]
+      });
+    </script>
+  </body>
+</html>

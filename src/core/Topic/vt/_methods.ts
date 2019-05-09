@@ -1,7 +1,7 @@
-import { Mind, queryTopic } from "../Mind";
-import { extend, randomId, initAnyProviders } from "../../utils/tools";
-import { Topic, IMTopicExportData } from ".";
-import { IMChangeTopicAttrKey } from "./lifecircle";
+import { Mind, queryTopic } from "../../Mind/vm";
+import { extend, randomId, initAnyProviders } from "../../../utils/tools";
+import { Topic, IMTopicExportData, IMChangeTopicAttrKey } from ".";
+import { fastDom } from "../../../utils/view";
 
 export function initProviders(vt: Topic) {
   initAnyProviders(vt, vt.options.providers, vt.data.providers);
@@ -29,11 +29,11 @@ export function vtClone(vt: Topic): Topic {
   // reset providers
   _clone.initProviders();
   // reset view
-  _clone.view.initElements();
+  _clone.view.createNodes();
   _clone.view.vt = _clone;
   // TODO: weather have layout providers
   // reset layout
-  _clone.layout.initElements();
+  _clone.layout.createNodes();
   _clone.layout.vt = _clone;
   // clone all children
   _clone.children = vt.children.map(cvt => {
@@ -50,7 +50,7 @@ export function modifyTopic(vt: Topic, topic: string): boolean {
   return true;
 }
 
-export function changeParent(vt: Topic, parent: Topic | Mind = vt.vm, index: number): boolean {
+export function changeParent(vt: Topic, parent: Topic | Mind = vt.vm, index: number) {
   if (parent instanceof Mind) {
     vt.parent = undefined;
     vt.branch = vt;
@@ -61,44 +61,51 @@ export function changeParent(vt: Topic, parent: Topic | Mind = vt.vm, index: num
     return parent.freeTopic(vt);
   }
   const op = queryTopic(vt.vm, vt.parent) as Topic;
-  if (op.id === parent.id) return false;
-  op.removeChildById(vt.id);
-  vt.parent = parent;
-  vt.branch = parent.isRoot ? vt : parent.branch;
-  // change index
-  vt.index = index;
-  return !!parent.addChild(vt);
+  if (op.id === parent.id) return Promise.reject();
+
+  return op.removeChildById(vt.id).then(() =>
+    fastDom.mutate(() => {
+      vt.parent = parent;
+      vt.branch = parent.isRoot ? vt : parent.branch;
+      // change index
+      vt.index = index;
+      parent.addChild(vt);
+    })
+  );
 }
 
-export function removeChildById(vt: Topic, id: string): boolean {
+export function removeChildById(vt: Topic, id: string) {
   const childVt = vt.vm.getTopicById(id);
-  if (!childVt) return false;
+  if (!childVt) return Promise.reject();
   const childIndex = vt.getChildIndexById(id);
-  if (childIndex === -1) return false;
-  // start to remove target child,and destroy it.
-  vt.$beforeUpdate();
-  // remove vtopic from parent vtopic child list
-  vt.children.splice(childIndex, 1)[0];
-  // unmount elements
-  childVt.view.unmount();
+  if (childIndex === -1) return Promise.reject();
+
   // reindex children
   reindexChildren(vt);
   // call hook
   vt.$updated();
-  return true;
+  return fastDom.mutate(() => {
+    // start to remove target child,and destroy it.
+    vt.$beforeUpdate();
+    // remove vtopic from parent vtopic child list an dom list
+    selfRemove(vt.children.splice(childIndex, 1)[0]);
+  });
 }
 
 // just self remove can destroy itself.
 export function selfRemove(vt: Topic) {
   // can not remove root topic
-  if (vt.isRoot) return false;
+  if (vt.isRoot) return Promise.reject();
   const pvt = vt.parent;
-  if (!pvt) return false;
+  // 不能删除根节点
+  if (!pvt) return Promise.reject();
   // remove from parent
-  pvt.removeChildById(vt.id);
+  if (pvt.removeChildById(vt.id)) {
+    vt.view.unmount();
+  }
   // destroy instance
-  pvt.$destroy();
-  return true;
+  vt.$destroy();
+  return fastDom.mutate(() => { });
 }
 
 // get some Topic's data
@@ -192,19 +199,18 @@ export function branch(rvt: Topic) {
   };
 }
 
-export function setAttribute(topic: Topic, attr: IMChangeTopicAttrKey, value: any) {
+export function onAttributeUpdated(topic: Topic, attr: IMChangeTopicAttrKey, value: any) {
+  topic.isBranch && console.info(topic.topic, attr, value);
+  // topic.view.updateView();
   switch (attr) {
     case "index": {
-      if (value !== topic.index && topic.parent) {
+      if (topic.parent) {
         topic.parent;
       }
       break;
     }
     case "direction": {
-      if (value !== topic.direction) {
-        topic.direction = value;
-        topic.view.changeModeClassName();
-      }
+      fastDom.mutate(topic.view.changeModeClassName)
     }
   }
 }

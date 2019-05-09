@@ -1,7 +1,7 @@
-import { TopicLifecircle, IMTopicData, IMChangeTopicAttrKey } from "./lifecircle";
-import { TopicView } from "./view";
-import { Mind, queryTopic } from "../Mind";
-import { IMTopicOptionsDef } from "./defs";
+import { TopicLifecircle, IMTopicData } from "./lifecircle";
+import { TopicView } from "../view";
+import { Mind, queryTopic } from "../../Mind/vm";
+import { IMTopicOptionsDef } from "../defs";
 import {
   vtClone,
   getTopicData,
@@ -12,13 +12,13 @@ import {
   branch,
   removeChildById,
   changeParent,
-  initProviders,
-  setAttribute
-} from "./methods";
-import { IMLayoutMode, IMLayoutModeValue } from "../layout";
+  initProviders
+} from "./_methods";
+import { IMLayoutMode, IMLayoutModeValue } from "../../layout";
+import { fastDom } from "../../../utils/view";
 
-export * from "./defs";
-export * from "./methods";
+export * from "../defs";
+export * from "./_methods";
 
 // just can be node-id or mind-node
 export type IMTopic = undefined | string | Topic;
@@ -52,16 +52,20 @@ export type IMTopicExportData = {
 };
 export type IMMindData<EX = {}> = Map<string, IMTopicExportData & EX>;
 
+export type IMChangeTopicAttrKey = "isRoot" | "root" | "isBranch" | "isFree" | "index" | "topic" | "parent" | "branch" | "direction";
+export const TopicAttributes = ["isRoot", "root", "isBranch", "isFree", "index", "topic", "parent", "branch", "direction"];
+
+
 export class Topic extends TopicLifecircle {
   // view layer
   view: TopicView;
   // layout layer
   layout: TopicView;
-
   constructor(vm: Mind, topicSource: IMTopicProps, options: IMTopicOptionsDef) {
     super(vm, topicSource, options);
     const { id, rootId, branchId, isRoot = false } = topicSource;
     this.root = vm.getTopicById(rootId || id) || this;
+    // free is branch also
     this.branch = isRoot ? undefined : !branchId ? undefined : vm.getTopicById(branchId) || this.parent!.branch || this;
     // after created
     this.initProviders();
@@ -70,10 +74,6 @@ export class Topic extends TopicLifecircle {
     this.$created();
     this.view = new TopicView(this);
   }
-
-  attr = (attr: IMChangeTopicAttrKey, value: any) => {
-    setAttribute(this, attr, value);
-  };
 
   initProviders = () => {
     initProviders(this);
@@ -138,27 +138,31 @@ export class Topic extends TopicLifecircle {
     if (selectChildren && this.children.length > 0) {
       this.children.map(child => child.select(select, selectChildren));
     }
-    this.view.select();
     const selectedMap = this.vm.topicSelectedMap;
-    if (select) {
+    if (this.selected) {
       selectedMap.set(this.id, this);
-      this.focus(true);
     } else {
       selectedMap.delete(this.id);
-      this.focus(true);
     }
-    this.$selectChange();
-    return select;
+    return fastDom.mutate(() => {
+      this.view.select();
+      if (this.selected) {
+        this.focus(true);
+      }
+      this.$selectChange();
+    });
   };
   focus = (yes: boolean = true) => {
-    if (this.focused === yes) return;
+    if (this.focused === yes) return Promise.reject();
     // 修改状态
     this.focused = yes;
-    if (yes) {
-      this.vm.topicCurrentFocus && this.vm.topicCurrentFocus.focus(false);
-      this.vm.topicCurrentFocus = this;
-    } else this.vm.topicCurrentFocus = undefined;
-    this.view.focus();
+    return fastDom.mutate(() => {
+      if (this.focused) {
+        this.vm.topicCurrentFocus && this.vm.topicCurrentFocus.focus(false);
+        this.vm.topicCurrentFocus = this;
+      } else this.vm.topicCurrentFocus = undefined;
+      this.view.focus();
+    });
   };
   // can expand all child and itself
   expand = (expand = !this.expanded, expandChildren: boolean = false) => {
@@ -167,18 +171,18 @@ export class Topic extends TopicLifecircle {
     if (expandChildren && this.children.length > 0) {
       this.children.map(child => child.expand(expandChildren, expand));
     }
-    this.view.expand();
-    this.$expandChange();
-    this.vm.layout.layout();
+    return fastDom.mutate(this.view.expand).then(() => {
+      this.$expandChange();
+    });
   };
   changeParent = (pv: Topic | Mind, index: number = -1) => {
     return changeParent(this, pv, index);
   };
   // quick methods
   // 向前插入兄弟节点
-  insertBefore() {}
+  insertBefore() { }
   // 向后插入兄弟街节点
-  insertAfter() {}
+  insertAfter() { }
   // 向前插入父节点
-  insertForward() {}
+  insertForward() { }
 }
